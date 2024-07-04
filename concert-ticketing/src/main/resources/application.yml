@@ -1,0 +1,23 @@
+Spring:
+  application:
+    name: concert-ticketing
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        use_new_id_generator_mappings: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        show_sql: true
