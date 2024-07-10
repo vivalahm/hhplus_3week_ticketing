@@ -1,5 +1,6 @@
 package com.hhplus.concertticketing.presentation.dto.response;
 
+import com.hhplus.concertticketing.business.model.Seat;
 import com.hhplus.concertticketing.presentation.dto.SeatDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,5 +12,5 @@ import java.util.List;
 public class SeatResponseDto {
     private String result;
     private String message;
-    private List<SeatDto> seats;
+    private List<Seat> seats;
 }

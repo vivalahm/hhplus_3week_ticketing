@@ -14,6 +14,4 @@ public class Concert {
     @Column(nullable = false)
     String title;
 
-    @OneToMany(mappedBy = "concert")
-    List<ConcertOption> concertOptions;
 }

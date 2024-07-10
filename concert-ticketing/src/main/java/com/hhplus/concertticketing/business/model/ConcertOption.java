@@ -1,22 +1,23 @@
 package com.hhplus.concertticketing.business.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "concert_option")
+@Getter
 public class ConcertOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "concer_id", nullable = false)
-    private Concert concert;
+    @Column(nullable = false)
+    private Long concertId;
 
     @Column(nullable = false)
-    private Integer maxSeatNumber;
+    private Boolean isAvailable;
 
     @Column(nullable = false)
     private LocalDateTime concertDate;

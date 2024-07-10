@@ -21,4 +21,6 @@ public interface TokenJpaRepository extends JpaRepository<Token, Long> {
 
     @Query("SELECT t FROM Token t WHERE t.status = 'WAITING' AND t.concertId = :concertId ORDER BY t.createdAt ASC")
     Optional<Token> findNextWaitingToken(@Param("concertId") Long concertId);
+
+    Optional<Token> findByTokenValue(String tokenValue);
 }

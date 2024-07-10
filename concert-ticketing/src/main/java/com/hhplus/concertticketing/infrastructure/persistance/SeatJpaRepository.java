@@ -13,6 +13,6 @@ public interface SeatJpaRepository extends JpaRepository<Seat, Long> {
     @Query("SELECT s FROM Seat s WHERE s.concertOption.id = :concertOptionId AND s.status='AVAILABLE'")
     List<Seat> findAvailableSeats(@Param("concertOptionId") Long concertOptionId);
 
-    @Query("SELECT s FROM Seat s WHERE s.concertOption.id = :concertOptionId AND s.seatNumber = :seatNumber AND s.status = 'AVAILABLE'")
-    Optional<Seat> findAvailableSeat(@Param("concertOptionId") Long concertOptionId, @Param("seatNumber") String seatNumber);
+    @Query("SELECT s FROM Seat s WHERE s.concertOption.id = :concertOptionId AND s.id = :seatId AND s.status = 'AVAILABLE'")
+    Optional<Seat> findAvailableSeat(@Param("concertOptionId") Long concertOptionId, @Param("seatId") long seatId);
 }

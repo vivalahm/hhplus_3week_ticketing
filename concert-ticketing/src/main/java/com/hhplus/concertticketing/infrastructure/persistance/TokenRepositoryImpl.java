@@ -36,7 +36,27 @@ public class TokenRepositoryImpl implements TokenRepository {
     }
 
     @Override
+    public Optional<Token> getTokenByTokenValue(String tokenValue) {
+        return tokenJpaRepository.findByTokenValue(tokenValue);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+
+    }
+
+    @Override
     public Token saveToken(Token token){
         return tokenJpaRepository.save(token);
+    }
+
+    @Override
+    public Optional<Token> getTokenById(Long id) {
+        return tokenJpaRepository.findById(id);
+    }
+
+    @Override
+    public List<Token> getAllTokens() {
+        return tokenJpaRepository.findAll();
     }
 }

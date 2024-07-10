@@ -15,15 +15,13 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    private Long customerId;
 
     @Column(nullable = false)
     private Long concertId;
 
     @Column(nullable = false, unique = true)
-    private String token;
+    private String tokenValue; //검증을 위한 토큰 값
 
     @Column(nullable = false)
     private String status; // ACTIVE, WAITING, EXPIRED

@@ -4,6 +4,7 @@ import com.hhplus.concertticketing.business.model.Customer;
 import com.hhplus.concertticketing.business.repository.CustomerRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,5 +24,14 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         return customerJpaRepository.save(customer);
     }
 
+    @Override
+    public List<Customer> getAllCustomers() {
+        return List.of();
+    }
+
+    @Override
+    public void deleteCustomer(Long userId){
+        customerJpaRepository.deleteById(userId);
+    }
 
 }

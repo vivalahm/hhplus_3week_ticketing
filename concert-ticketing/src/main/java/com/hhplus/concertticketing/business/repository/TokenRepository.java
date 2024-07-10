@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TokenRepository {
+    Token saveToken(Token token);
+    Optional<Token> getTokenById(Long id);
+    List<Token> getAllTokens();
     Long getCountActiveTokens(Long concertId);
     Boolean getExistWaitingTokens(Long concertId);
     List<Token> getActiveExpiredTokens(Long concertId, LocalDateTime currentDateTime);
     Optional<Token> getNextWaitingToken(Long concertId);
-    Token saveToken(Token token);
+    Optional<Token> getTokenByTokenValue(String tokenValue);
+    void deleteById(Long id);
 }

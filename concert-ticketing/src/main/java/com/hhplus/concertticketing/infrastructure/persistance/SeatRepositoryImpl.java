@@ -15,12 +15,23 @@ public class SeatRepositoryImpl implements SeatRepository {
     }
 
     @Override
+    public Seat saveSeat(Seat seat) {
+        return seatJpaRepository.save(seat);
+    }
+
+    @Override
+    public Optional<Seat> getSeatById(Long id) {
+        return seatJpaRepository.findById(id);
+    }
+
+    @Override
     public List<Seat> getAvailableSeats(Long concertOptionId){
         return seatJpaRepository.findAvailableSeats(concertOptionId);
     }
 
     @Override
-    public Optional<Seat> getAvailableSeat(Long concertOptionId, String seatNumber){
-        return seatJpaRepository.findAvailableSeat(concertOptionId, seatNumber);
+    public Optional<Seat> getAvailableSeat(Long concertOptionId, Long seatId) {
+        return Optional.empty();
     }
+
 }
