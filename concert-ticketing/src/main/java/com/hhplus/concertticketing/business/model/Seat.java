@@ -13,13 +13,14 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concert_option_id", nullable = false)
-    private ConcertOption concertOption;
+    private Long concertOptionId;
 
-    @Column(nullable = false)
     private String seatNumber;
 
-    @Column(nullable = false)
-    private String status; // AVAILABLE, LOCKED, RESERVED
+    @Enumerated(EnumType.STRING)
+    private SeatStatus status; // AVAILABLE, LOCKED, RESERVED
+
+    @Version
+    private Long version;
 }
+

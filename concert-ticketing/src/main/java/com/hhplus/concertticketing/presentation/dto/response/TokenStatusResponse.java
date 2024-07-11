@@ -1,9 +1,17 @@
 package com.hhplus.concertticketing.presentation.dto.response;
 
-public class TokenStatusResponse {
-    private String status;
+import com.hhplus.concertticketing.business.model.TokenStatus;
+import lombok.Getter;
+import lombok.Setter;
 
-    public TokenStatusResponse(String status) {
+@Getter
+@Setter
+public class TokenStatusResponse {
+    private TokenStatus status;
+    private Long Position;
+
+    public TokenStatusResponse(TokenStatus status, Long Position) {
         this.status = status;
+        this.Position = Position;
     }
 }

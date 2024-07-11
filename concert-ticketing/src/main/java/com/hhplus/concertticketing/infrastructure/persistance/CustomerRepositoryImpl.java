@@ -15,8 +15,8 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
-    public Optional<Customer> getCustomerById(Long userId){
-        return customerJpaRepository.findById(userId);
+    public Optional<Customer> getCustomerById(Long customerId){
+        return customerJpaRepository.findById(customerId);
     }
 
     @Override

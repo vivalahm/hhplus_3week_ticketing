@@ -1,6 +1,7 @@
 package com.hhplus.concertticketing.business.service;
 
 import com.hhplus.concertticketing.business.model.Token;
+import com.hhplus.concertticketing.business.model.TokenStatus;
 import com.hhplus.concertticketing.business.repository.TokenRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,21 +18,21 @@ public class TokenService {
         this.tokenRepository = tokenRepository;
     }
 
-    public Token issueToken(Long customerId, Long concertId, int maxActiveTokens, boolean hasWaitingTokens){
+    public Token issueToken(Long customerId, Long concertId, int maxActiveTokens){
         long activeTokenCount = tokenRepository.getCountActiveTokens(concertId);
-
+        boolean hasWaitingTokens = tokenRepository.getExistWaitingTokens(concertId);
         Token token = new Token();
         token.setCustomerId(customerId);
-        token.setConcertId(customerId);
+        token.setConcertId(concertId);
         token.setCreatedAt(LocalDateTime.now());
-        token.setExpiresAt(LocalDateTime.now().plusHours(2));
         token.setTokenValue(generateTokenValue());
 
-        if(activeTokenCount >= maxActiveTokens && !hasWaitingTokens){
-            token.setStatus("ACTIVE");
+        if(activeTokenCount <= maxActiveTokens && !hasWaitingTokens){
+            token.setStatus(TokenStatus.ACTIVE);
+            token.setExpiresAt(LocalDateTime.now().plusMinutes(10));
         }
         else {
-            token.setStatus("WAITING");
+            token.setStatus(TokenStatus.WAITING);
         }
 
         return tokenRepository.saveToken(token);
@@ -43,30 +44,26 @@ public class TokenService {
             throw new IllegalStateException("Invalid token value");
         }
         Token token = tokenOptional.get();
-        if(!token.getStatus().equals("ACTIVE")){
-            throw new IllegalStateException("Invalid token value");
-        }
         return token;
     }
 
-    public Long countActiveTokens(Long concertId){
-        return tokenRepository.getCountActiveTokens(concertId);
+    public Token getTokenByConcertIdAndCustomerId(Long concertId, Long customerId){
+        Optional<Token> optionalToken = tokenRepository.getTokenByConcertIdAndCustomerId(concertId,customerId);
+        if(optionalToken.isEmpty()){
+            throw new IllegalStateException("Invalid token value");
+        }
+        return optionalToken.get();
     }
 
-    public Boolean existWaitingTokens(Long concertId){
-        return tokenRepository.getExistWaitingTokens(concertId);
-    }
-
-    public List<Token> getActiveExpiredTokens(Long concertId,LocalDateTime currentDateTime){
-        return tokenRepository.getActiveExpiredTokens(concertId, currentDateTime);
+    public List<Token> getActiveExpiredTokens(LocalDateTime currentDateTime){
+        return tokenRepository.getActiveExpiredTokens(currentDateTime);
     }
 
     public Optional<Token> getNextWaitingToken(Long concertId){
         return tokenRepository.getNextWaitingToken(concertId);
     }
 
-    public void UpdateTokenStatus(Token token, String status){
-        token.setStatus(status);
+    public void updateToken(Token token){
         tokenRepository.saveToken(token);
     }
 

@@ -1,7 +1,6 @@
 package com.hhplus.concertticketing.presentation.dto.response;
 
 import com.hhplus.concertticketing.business.model.Seat;
-import com.hhplus.concertticketing.presentation.dto.SeatDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SeatResponseDto {
+public class SeatResponse {
     private String result;
     private String message;
     private List<Seat> seats;

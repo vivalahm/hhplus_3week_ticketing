@@ -31,7 +31,7 @@ public class SeatRepositoryImpl implements SeatRepository {
 
     @Override
     public Optional<Seat> getAvailableSeat(Long concertOptionId, Long seatId) {
-        return Optional.empty();
+        return seatJpaRepository.findAvailableSeat(concertOptionId,seatId);
     }
 
 }

@@ -21,12 +21,14 @@ public class Reservation {
 
     private Long concertOptionId;
 
-    @Column(nullable = false)
-    private String status; // RESERVING, RESERVED, CANCLED
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status; // RESERVING, RESERVED, CANCLED
 
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
     private LocalDateTime expiresAt;
+
+    @Version
+    private Long version;
 }
+

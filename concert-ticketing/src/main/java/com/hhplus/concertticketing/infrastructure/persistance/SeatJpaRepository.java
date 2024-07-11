@@ -10,9 +10,9 @@ import java.util.Optional;
 
 public interface SeatJpaRepository extends JpaRepository<Seat, Long> {
 
-    @Query("SELECT s FROM Seat s WHERE s.concertOption.id = :concertOptionId AND s.status='AVAILABLE'")
+    @Query("SELECT s FROM Seat s WHERE s.concertOptionId = :concertOptionId AND s.status='AVAILABLE'")
     List<Seat> findAvailableSeats(@Param("concertOptionId") Long concertOptionId);
 
-    @Query("SELECT s FROM Seat s WHERE s.concertOption.id = :concertOptionId AND s.id = :seatId AND s.status = 'AVAILABLE'")
+    @Query("SELECT s FROM Seat s WHERE s.concertOptionId = :concertOptionId AND s.id = :seatId AND s.status = 'AVAILABLE'")
     Optional<Seat> findAvailableSeat(@Param("concertOptionId") Long concertOptionId, @Param("seatId") long seatId);
 }

@@ -1,6 +1,7 @@
 package com.hhplus.concertticketing.application.usecase;
 
 import com.hhplus.concertticketing.business.model.Reservation;
+import com.hhplus.concertticketing.business.model.ReservationStatus;
 import com.hhplus.concertticketing.business.model.Seat;
 import com.hhplus.concertticketing.business.model.Token;
 import com.hhplus.concertticketing.business.service.ReservationService;
@@ -31,7 +32,8 @@ public class ReservationUseCase {
     public void checkAndUpdateExpiredReservations(){
         List<Reservation> expiredReservations = reservationService.getExpiredReservations(LocalDateTime.now());
         for(Reservation reservation : expiredReservations){
-            reservationService.updateReservationStatus(reservation,"CANCELLED");
+            reservation.setStatus(ReservationStatus.CANCLED);
+            reservationService.updateReservationStatus(reservation);
             seatService.unlockSeat(reservation.getSeatId());
         }
     }
@@ -41,7 +43,7 @@ public class ReservationUseCase {
 
         Token token = tokenService.getTokenByTokenValue(reservationRequest.getTokenValue());
 
-        Seat seat = seatService.lockSeat(reservationRequest.getConcertOptionId(),reservationRequest.getSeatId());
+        seatService.lockSeat(reservationRequest.getConcertOptionId(),reservationRequest.getSeatId());
 
         Reservation reservation = reservationService.reserveTicket(token.getCustomerId(),reservationRequest.getConcertOptionId(),reservationRequest.getSeatId());
 

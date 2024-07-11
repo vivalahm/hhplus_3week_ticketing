@@ -1,9 +1,12 @@
 package com.hhplus.concertticketing.infrastructure.persistance;
 
 import com.hhplus.concertticketing.business.model.Token;
+import com.hhplus.concertticketing.business.model.TokenStatus;
 import com.hhplus.concertticketing.business.repository.TokenRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,18 +29,23 @@ public class TokenRepositoryImpl implements TokenRepository {
     }
 
     @Override
-    public List<Token> getActiveExpiredTokens(Long concertId, LocalDateTime currentDateTime){
-        return tokenJpaRepository.findActiveExpiredTokens(concertId, currentDateTime);
+    public List<Token> getActiveExpiredTokens(LocalDateTime currentDateTime){
+        return tokenJpaRepository.findActiveExpiredTokens(currentDateTime);
     }
 
     @Override
     public Optional<Token> getNextWaitingToken(Long concertId) {
-        return tokenJpaRepository.findNextWaitingToken(concertId);
+        return tokenJpaRepository.findFirstByConcertIdAndStatusOrderByCreatedAtAsc(concertId, TokenStatus.WAITING);
     }
 
     @Override
     public Optional<Token> getTokenByTokenValue(String tokenValue) {
         return tokenJpaRepository.findByTokenValue(tokenValue);
+    }
+
+    @Override
+    public Optional<Token> getTokenByConcertIdAndCustomerId(Long concertId, Long customerId) {
+        return tokenJpaRepository.findByConcertIdAndCustomerId(concertId,customerId);
     }
 
     @Override

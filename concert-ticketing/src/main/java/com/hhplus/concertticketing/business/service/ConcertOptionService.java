@@ -20,8 +20,12 @@ public class ConcertOptionService {
         return concertOptionRepository.saveConcertOption(concertOption);
     }
 
-    public Optional<ConcertOption> getConcertOptionById(Long concertOptionId) {
-        return concertOptionRepository.getConcertOptionById(concertOptionId);
+    public ConcertOption getConcertOptionById(Long concertOptionId) {
+        Optional<ConcertOption>optionalConcertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
+        if(optionalConcertOption.isEmpty()){
+            throw new IllegalStateException("해당 콘서트 옵션을 발견못했습니다.");
+        }
+        return optionalConcertOption.get();
     }
 
     public List<ConcertOption> getAvailableConcertOptions(Long concertOptionId, LocalDateTime currentDateTime){
