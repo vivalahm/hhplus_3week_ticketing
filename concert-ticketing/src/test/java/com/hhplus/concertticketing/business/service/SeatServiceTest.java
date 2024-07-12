@@ -36,6 +36,9 @@ public class SeatServiceTest {
         Long concertOptionId = 1L;
         Long seatId = 1L;
         Seat seat = new Seat();
+        seat.setId(seatId);
+        seat.setConcertOptionId(concertOptionId);
+        seat.setSeatNumber("A1");
         seat.setStatus(SeatStatus.AVAILABLE);
 
         when(seatRepository.getAvailableSeat(concertOptionId, seatId)).thenReturn(Optional.of(seat));
@@ -168,6 +171,10 @@ public class SeatServiceTest {
         Long concertOptionId = 1L;
         Long seatId = 1L;
         Seat seat = new Seat();
+        seat.setId(seatId);
+        seat.setConcertOptionId(concertOptionId);
+        seat.setSeatNumber("A1");
+        seat.setStatus(SeatStatus.AVAILABLE);
 
         when(seatRepository.getAvailableSeat(concertOptionId, seatId)).thenReturn(Optional.of(seat));
 

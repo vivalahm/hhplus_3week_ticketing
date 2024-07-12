@@ -20,7 +20,7 @@ public class SeatService {
 
     @Transactional
     public Seat lockSeat(Long concertOptionId, Long seatId) {
-        Optional<Seat> optionalSeat = seatRepository.getSeatById(seatId);
+        Optional<Seat> optionalSeat = seatRepository.getAvailableSeat(concertOptionId, seatId);
         if (optionalSeat.isPresent()) {
             Seat seat = optionalSeat.get();
             if (seat.getStatus() == SeatStatus.AVAILABLE) {
@@ -69,7 +69,7 @@ public class SeatService {
     }
 
     public Seat getAvailableSeat(Long concertOptionId, Long seatId) {
-        Optional<Seat> seatOptional = seatRepository.getSeatById(seatId);
+        Optional<Seat> seatOptional = seatRepository.getAvailableSeat(concertOptionId, seatId);
         if (seatOptional.isEmpty()) {
             throw new IllegalStateException("좌석이 존재하지 않습니다.");
         }
