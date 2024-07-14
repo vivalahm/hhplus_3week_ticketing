@@ -12,7 +12,7 @@ public class ReservationScheduler {
         this.reservationUseCase = reservationUseCase;
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 60*1000)
     public void checkExpiredReservations() {
         reservationUseCase.checkAndUpdateExpiredReservations();
     }

@@ -12,7 +12,7 @@ public class TokenScheduler {
         this.tokenUseCase = tokenUseCase;
     }
 
-    @Scheduled(fixedRate = 60000) //1분 간격 스케줄링
+    @Scheduled(fixedRate = 60*1000) //1분 간격 스케줄링
     public void checkExpiredTokens() {
         tokenUseCase.checkAndUpdateExpiredTokens();
     }

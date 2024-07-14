@@ -13,17 +13,15 @@ import java.util.Optional;
 @Component
 public class PaymentUseCase {
     private final ReservationService reservationService;
-    private final SeatService seatService;
+    private final ConcertService concertService;
     private final TokenService tokenService;
     private final CustomerService customerService;
-    private final ConcertOptionService concertOptionService;
 
-    public PaymentUseCase(ReservationService reservationService, SeatService seatService, TokenService tokenService, CustomerService customerService, ReservationService reservationService1, SeatService seatService1, TokenService tokenService1, CustomerService customerService1, ConcertOptionService concertOptionService) {
-        this.reservationService = reservationService1;
-        this.seatService = seatService1;
-        this.tokenService = tokenService1;
-        this.customerService = customerService1;
-        this.concertOptionService = concertOptionService;
+    public PaymentUseCase(ReservationService reservationService, ConcertService concertService, TokenService tokenService, CustomerService customerService) {
+        this.reservationService = reservationService;
+        this.concertService = concertService;
+        this.tokenService = tokenService;
+        this.customerService = customerService;
     }
 
     @Transactional
@@ -31,7 +29,7 @@ public class PaymentUseCase {
         //예약을 찾아온다.
         Reservation reservation = reservationService.getReservationById(paymentRequest.getReservationId()).orElseThrow(()->new IllegalArgumentException("예약이 존재하지 않습니다."));
         //예약이 있는 경우 해당 콘서트에 대한 비용 정보를 가져오기 위해 concertOption을 가져온다.
-        ConcertOption concertOption = concertOptionService.getConcertOptionById(reservation.getConcertOptionId());
+        ConcertOption concertOption = concertService.getConcertOptionById(reservation.getConcertOptionId());
 
         //예약 정보의 사용자 아이디와 콘서트 옵션의 가격을 통해 사용자의 포인트에서 차감한다.
         customerService.usePoint(reservation.getCustomerId(), concertOption.getPrice());
@@ -40,7 +38,7 @@ public class PaymentUseCase {
         reservation.setStatus(ReservationStatus.PAID);
         reservationService.updateReservationStatus(reservation);
 
-        seatService.reserveSeat(reservation.getSeatId());
+        concertService.reserveSeat(reservation.getSeatId());
         Token token = tokenService.getTokenByConcertIdAndCustomerId(concertOption.getConcertId(), reservation.getCustomerId());
 
         token.setStatus(TokenStatus.EXPIRED);
