@@ -1,53 +1,21 @@
 package com.hhplus.concertticketing.business.service;
 
-import com.hhplus.concertticketing.business.model.ConcertOption;
 import com.hhplus.concertticketing.business.model.Seat;
 import com.hhplus.concertticketing.business.model.SeatStatus;
-import com.hhplus.concertticketing.business.repository.ConcertOptionRepository;
-import com.hhplus.concertticketing.business.repository.ConcertRepository;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ConcertService {
-    private final ConcertRepository concertRepository;
-    private final ConcertOptionRepository concertOptionRepository;
+public class SeatService {
     private final SeatRepository seatRepository;
 
-    public ConcertService(ConcertRepository concertRepository, ConcertOptionRepository concertOptionRepository, SeatRepository seatRepository){
-        this.concertRepository = concertRepository;
-        this.concertOptionRepository = concertOptionRepository;
+    public SeatService(SeatRepository seatRepository) {
         this.seatRepository = seatRepository;
-    }
-
-    public ConcertOption saveConcertOption(ConcertOption concertOption) {
-        return concertOptionRepository.saveConcertOption(concertOption);
-    }
-
-    public ConcertOption getConcertOptionById(Long concertOptionId) {
-        Optional<ConcertOption> optionalConcertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
-        if(optionalConcertOption.isEmpty()){
-            throw new IllegalStateException("해당 콘서트 옵션을 발견못했습니다.");
-        }
-        return optionalConcertOption.get();
-    }
-
-    public List<ConcertOption> getAvailableConcertOptions(Long concertOptionId, LocalDateTime currentDateTime){
-        List<ConcertOption> concertOptionList = concertOptionRepository.getAllAvailableDatesByConcertId(concertOptionId, currentDateTime);
-        if(concertOptionList.isEmpty()){
-            throw new IllegalStateException("예약가능한 콘서트 옵션이 없습니다.");
-        }
-        return concertOptionList;
-    }
-
-    public void deleteConcertOptionById(Long concertOptionId) {
-        concertOptionRepository.deleteConcertOption(concertOptionId);
     }
 
     @Transactional
@@ -107,5 +75,4 @@ public class ConcertService {
         }
         return seatOptional.get();
     }
-
 }
