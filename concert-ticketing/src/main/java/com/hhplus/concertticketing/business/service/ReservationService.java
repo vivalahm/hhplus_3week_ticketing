@@ -30,12 +30,7 @@ public class ReservationService {
     @Transactional
     public Reservation reserveTicket(Long customerId, Long concertOptionId, Long seatId) {
         Reservation reservation = new Reservation();
-        reservation.setCustomerId(customerId);
-        reservation.setConcertOptionId(concertOptionId);
-        reservation.setSeatId(seatId);
-        reservation.setStatus(ReservationStatus.RESERVING);
-        reservation.setCreatedAt(LocalDateTime.now());
-        reservation.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        reservation.reserveTicket(customerId, concertOptionId, seatId);
         try {
             return reservationRepository.saveReservation(reservation);
         } catch (ObjectOptimisticLockingFailureException e) {

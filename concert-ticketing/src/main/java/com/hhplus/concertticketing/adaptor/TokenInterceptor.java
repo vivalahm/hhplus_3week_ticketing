@@ -56,7 +56,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             } catch (Exception e) {
                 logger.error("토큰 검증 중 오류: {}", e.getMessage(), e);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+                throw new CustomException(ErrorCode.UNAUTHORIZED, e.getMessage());
             }
         }
     }

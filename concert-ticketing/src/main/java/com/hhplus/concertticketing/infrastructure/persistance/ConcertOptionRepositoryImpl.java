@@ -32,6 +32,16 @@ public class ConcertOptionRepositoryImpl implements ConcertOptionRepository {
     }
 
     @Override
+    public List<ConcertOption> getAllByConcertId(Long concertId) {
+        return concertOptionJpaRepository.findAllByConcertId(concertId);
+    }
+
+    @Override
+    public List<ConcertOption> getByConcertIdAndIsAvailable(Long concertId, Boolean isAvailable) {
+        return concertOptionJpaRepository.findByConcertIdAndIsAvailable(concertId, isAvailable);
+    }
+
+    @Override
     public void deleteConcertOption(Long id) {
         concertOptionJpaRepository.deleteById(id);
     }

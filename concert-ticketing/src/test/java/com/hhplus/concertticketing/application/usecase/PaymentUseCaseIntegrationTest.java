@@ -47,7 +47,7 @@ public class PaymentUseCaseIntegrationTest {
     void setUp() {
         // Initialize Customer
         customer = new Customer();
-        customer.setName("John Doe");
+        customer.setName("홍길동");
         customer.setPoint(100.0);
         customer = customerRepository.saveCustomer(customer);
 

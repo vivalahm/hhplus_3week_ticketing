@@ -44,6 +44,9 @@ public class PaymentUseCase {
         // 좌석 예약을 완료한다.
         concertService.reserveSeat(reservation.getSeatId());
 
+        //만약 마지막 좌석이면 품절로 처리
+        concertService.markAsSoldOutIfSeatsNotAvailable(concertOption.getId());
+
         // 토큰을 만료 처리한다.
         Token token = tokenService.getTokenByConcertIdAndCustomerId(concertOption.getConcertId(), reservation.getCustomerId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "토큰이 존재하지 않습니다."));

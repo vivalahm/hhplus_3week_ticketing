@@ -4,12 +4,10 @@ import com.hhplus.concertticketing.business.model.Customer;
 import com.hhplus.concertticketing.business.repository.CustomerRepository;
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
-import jakarta.persistence.OptimisticLockException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Service
 public class CustomerService {

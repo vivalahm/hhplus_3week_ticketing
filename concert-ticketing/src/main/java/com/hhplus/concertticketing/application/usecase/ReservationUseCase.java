@@ -39,6 +39,7 @@ public class ReservationUseCase {
             reservation.setStatus(ReservationStatus.CANCLED);
             reservationService.updateReservationStatus(reservation);
             concertService.unlockSeat(reservation.getSeatId());
+            concertService.markConcertOptionAsAvailableIfSeatsExist(reservation.getConcertOptionId());
         }
     }
 
@@ -48,7 +49,7 @@ public class ReservationUseCase {
             Token token = tokenService.getTokenByTokenValue(reservationRequest.getTokenValue());
             concertService.lockSeat(reservationRequest.getConcertOptionId(), reservationRequest.getSeatId());
             Reservation reservation = reservationService.reserveTicket(token.getCustomerId(), reservationRequest.getConcertOptionId(), reservationRequest.getSeatId());
-
+            concertService.markConcertOptionAsNotAvailableIfNoSeatsExist(reservationRequest.getConcertOptionId());
             return new ReservationResponse(reservation.getId(), reservation.getStatus(), reservation.getExpiresAt());
         } catch (Exception e) {
             logger.error("Error in reserveTicket: " + e.getMessage(), e);

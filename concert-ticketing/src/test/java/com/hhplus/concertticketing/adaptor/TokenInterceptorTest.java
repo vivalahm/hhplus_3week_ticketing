@@ -3,6 +3,9 @@ package com.hhplus.concertticketing.adaptor;
 import com.hhplus.concertticketing.adaptor.presentation.dto.response.TokenStatusResponse;
 import com.hhplus.concertticketing.application.usecase.TokenUseCase;
 import com.hhplus.concertticketing.business.model.TokenStatus;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,37 +52,37 @@ public class TokenInterceptorTest {
 
     @Test
     @DisplayName("유효하지 않은 토큰인 경우 401 상태 코드 반환")
-    void preHandle_ShouldReturnFalse_WhenTokenIsInvalid() throws Exception {
+    void preHandle_ShouldReturnFalse_WhenTokenIsInvalid() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         request.setRequestURI("/api/some-endpoint");
         request.addHeader("Authorization", "invalidToken");
 
-        when(tokenUseCase.getTokenStatus("invalidToken")).thenReturn(new TokenStatusResponse(TokenStatus.EXPIRED, 1L));
+        // when & then
+        CustomException thrownException = assertThrows(CustomException.class, () -> {
+            tokenInterceptor.preHandle(request, response, new Object());
+        });
 
-        // when
-        boolean result = tokenInterceptor.preHandle(request, response, new Object());
-
-        // then
-        assertFalse(result);
-        assertEquals(401, response.getStatus());
+        assertEquals(ErrorCode.UNAUTHORIZED, thrownException.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
     }
 
     @Test
-    @DisplayName("토큰이 없는 경우 401 상태 코드 반환")
-    void preHandle_ShouldReturnFalse_WhenTokenIsMissing() throws Exception {
+    @DisplayName("토큰이 없는 경우 CustomException을 던지고 401 상태 코드 반환")
+    void preHandle_ShouldThrowCustomException_WhenTokenIsMissing() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         request.setRequestURI("/api/some-endpoint");
 
-        // when
-        boolean result = tokenInterceptor.preHandle(request, response, new Object());
+        // when & then
+        CustomException thrownException = assertThrows(CustomException.class, () -> {
+            tokenInterceptor.preHandle(request, response, new Object());
+        });
 
-        // then
-        assertFalse(result);
-        assertEquals(401, response.getStatus());
+        assertEquals(ErrorCode.UNAUTHORIZED, thrownException.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
     }
 
     @Test

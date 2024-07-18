@@ -17,9 +17,17 @@ public class ConcertOption {
 
     private Long concertId;
 
-    private Boolean isAvailable;
+    private Boolean isAvailable = true;
 
     private LocalDateTime concertDate;
 
     private Double price;
+
+    public void makeAvailable(){
+        this.isAvailable = true;
+    }
+
+    public void makeNotAvailable(){
+        this.isAvailable = false;
+    }
 }
