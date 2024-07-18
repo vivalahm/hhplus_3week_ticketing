@@ -2,6 +2,7 @@ package com.hhplus.concertticketing.adaptor.presentation.controller;
 
 import com.hhplus.concertticketing.application.usecase.ReservationUseCase;
 import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import com.hhplus.concertticketing.adaptor.presentation.dto.request.ReservationRequest;
 import com.hhplus.concertticketing.adaptor.presentation.dto.response.ReservationResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api")
-@Tag(name = "Reservation Controller", description = "API for managing reservations")
+@Tag(name = "예약 컨트롤러", description = "예약 관리를 위한 API")
 public class ReservationController {
     private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
 
@@ -23,27 +24,23 @@ public class ReservationController {
     private ReservationUseCase reservationUseCase;
 
     @PostMapping("/reserve")
-    @Operation(summary = "Reserve a seat", description = "Reserves a seat for a given concert option")
+    @Operation(summary = "좌석 예약", description = "주어진 콘서트 옵션에 대해 좌석을 예약합니다.")
     public ResponseEntity<ReservationResponse> reserveSeat(
-            @RequestBody @Parameter(description = "ReservationRequest object containing tokenValue, concertOptionId, and seatId") ReservationRequest request) {
+            @RequestBody @Parameter(description = "토큰 값, 콘서트 옵션 ID, 좌석 ID를 포함하는 ReservationRequest 객체") ReservationRequest request) {
 
-        logger.info("Received reservation request: {}", request);
+        logger.info("예약 요청 수신: {}", request);
 
-        if (request.getTokenValue() == null || request.getTokenValue().isEmpty()) {
-            logger.error("Invalid or expired token");
-            throw new CustomException("401", "Invalid or expired token");
-        }
         if (request.getConcertOptionId() == null || request.getSeatId() == null) {
-            logger.error("Missing or invalid parameters");
-            throw new CustomException("400", "Missing or invalid parameters");
+            logger.error("필수 파라미터가 누락되었거나 잘못되었습니다.");
+            throw new CustomException(ErrorCode.BAD_REQUEST);
         }
         try {
             ReservationResponse response = reservationUseCase.reserveTicket(request);
-            logger.info("Reservation successful: {}", response);
+            logger.info("예약 성공: {}", response);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            logger.error("Internal server error", e);
-            throw new CustomException("500", "Internal server error");
+            logger.error("서버 내부 오류", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }

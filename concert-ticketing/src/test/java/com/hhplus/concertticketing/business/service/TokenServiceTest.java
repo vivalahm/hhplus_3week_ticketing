@@ -3,6 +3,8 @@ package com.hhplus.concertticketing.business.service;
 import com.hhplus.concertticketing.business.model.Token;
 import com.hhplus.concertticketing.business.model.TokenStatus;
 import com.hhplus.concertticketing.business.repository.TokenRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,11 +104,11 @@ public class TokenServiceTest {
         String tokenValue = UUID.randomUUID().toString();
         when(tokenRepository.getTokenByTokenValue(tokenValue)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             tokenService.getTokenByTokenValue(tokenValue);
         });
 
-        assertEquals("Invalid token value", exception.getMessage());
+        assertEquals(ErrorCode.NOT_FOUND.getCode(), exception.getErrorCode().getCode());
         verify(tokenRepository, times(1)).getTokenByTokenValue(tokenValue);
     }
 
@@ -121,11 +123,11 @@ public class TokenServiceTest {
 
         when(tokenRepository.getTokenByConcertIdAndCustomerId(concertId, customerId)).thenReturn(Optional.of(token));
 
-        Token foundToken = tokenService.getTokenByConcertIdAndCustomerId(concertId, customerId);
+        Optional<Token> foundToken = tokenService.getTokenByConcertIdAndCustomerId(concertId, customerId);
 
         assertNotNull(foundToken);
-        assertEquals(concertId, foundToken.getConcertId());
-        assertEquals(customerId, foundToken.getCustomerId());
+        assertEquals(concertId, foundToken.get().getConcertId());
+        assertEquals(customerId, foundToken.get().getCustomerId());
         verify(tokenRepository, times(1)).getTokenByConcertIdAndCustomerId(concertId, customerId);
     }
 
@@ -136,11 +138,11 @@ public class TokenServiceTest {
         Long customerId = 1L;
         when(tokenRepository.getTokenByConcertIdAndCustomerId(concertId, customerId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             tokenService.getTokenByConcertIdAndCustomerId(concertId, customerId);
         });
 
-        assertEquals("Invalid token value", exception.getMessage());
+        assertEquals(ErrorCode.NOT_FOUND.getCode(), exception.getErrorCode().getCode());
         verify(tokenRepository, times(1)).getTokenByConcertIdAndCustomerId(concertId, customerId);
     }
 

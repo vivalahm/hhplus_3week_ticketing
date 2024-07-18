@@ -3,6 +3,8 @@ package com.hhplus.concertticketing.business.service;
 import com.hhplus.concertticketing.business.model.Seat;
 import com.hhplus.concertticketing.business.model.SeatStatus;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,11 +62,11 @@ public class SeatServiceTest {
 
         when(seatRepository.getAvailableSeat(concertOptionId, seatId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             seatService.lockSeat(concertOptionId, seatId);
         });
 
-        assertEquals("Seat does not exist", exception.getMessage());
+        assertEquals("좌석이 존재하지 않습니다.", exception.getMessage());
         verify(seatRepository, times(1)).getAvailableSeat(concertOptionId, seatId);
         verify(seatRepository, times(0)).saveSeat(any(Seat.class));
     }
@@ -92,11 +94,11 @@ public class SeatServiceTest {
 
         when(seatRepository.getSeatById(seatId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             seatService.unlockSeat(seatId);
         });
 
-        assertEquals("Seat does not exist", exception.getMessage());
+        assertEquals("좌석이 존재하지 않습니다.", exception.getMessage());
         verify(seatRepository, times(1)).getSeatById(seatId);
         verify(seatRepository, times(0)).saveSeat(any(Seat.class));
     }
@@ -124,11 +126,11 @@ public class SeatServiceTest {
 
         when(seatRepository.getSeatById(seatId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             seatService.reserveSeat(seatId);
         });
 
-        assertEquals("Seat does not exist", exception.getMessage());
+        assertEquals("좌석이 존재하지 않습니다.", exception.getMessage());
         verify(seatRepository, times(1)).getSeatById(seatId);
         verify(seatRepository, times(0)).saveSeat(any(Seat.class));
     }
@@ -157,7 +159,7 @@ public class SeatServiceTest {
 
         when(seatRepository.getAvailableSeats(concertOptionId)).thenReturn(Arrays.asList());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             seatService.getAvailableSeats(concertOptionId);
         });
 
@@ -192,9 +194,11 @@ public class SeatServiceTest {
 
         when(seatRepository.getAvailableSeat(concertOptionId, seatId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             seatService.getAvailableSeat(concertOptionId, seatId);
         });
+
+        assertEquals("좌석이 존재하지 않습니다.", exception.getMessage());
         verify(seatRepository, times(1)).getAvailableSeat(concertOptionId, seatId);
     }
 }

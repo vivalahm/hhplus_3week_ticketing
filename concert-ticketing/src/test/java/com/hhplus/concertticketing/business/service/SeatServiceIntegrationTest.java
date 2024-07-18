@@ -3,6 +3,8 @@ package com.hhplus.concertticketing.business.service;
 import com.hhplus.concertticketing.business.model.Seat;
 import com.hhplus.concertticketing.business.model.SeatStatus;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,7 +78,7 @@ public class SeatServiceIntegrationTest {
             try {
                 seatService.lockSeat(concertOptionId, seatId);
                 Thread.sleep(500); // 인위적으로 지연시켜 동시성 문제를 유발
-            } catch (InterruptedException | IllegalArgumentException e) {
+            } catch (InterruptedException | CustomException e) {
                 System.out.println("Expected exception in task1: " + e.getMessage());
             }
         };
@@ -84,7 +86,7 @@ public class SeatServiceIntegrationTest {
         Runnable task2 = () -> {
             try {
                 seatService.lockSeat(concertOptionId, seatId);
-            } catch (IllegalArgumentException e) {
+            } catch (CustomException e) {
                 System.out.println("Expected exception in task2: " + e.getMessage());
             }
         };

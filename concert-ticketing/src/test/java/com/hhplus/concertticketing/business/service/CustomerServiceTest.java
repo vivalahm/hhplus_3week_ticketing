@@ -2,6 +2,8 @@ package com.hhplus.concertticketing.business.service;
 
 import com.hhplus.concertticketing.business.model.Customer;
 import com.hhplus.concertticketing.business.repository.CustomerRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,7 @@ public class CustomerServiceTest {
         Customer updatedCustomer = customerService.chargePoint(customerId, amount);
 
         assertNotNull(updatedCustomer);
+        assertEquals(100.0, updatedCustomer.getPoint());
         verify(customerRepository, times(1)).getCustomerById(customerId);
         verify(customerRepository, times(1)).saveCustomer(customer);
     }
@@ -62,7 +65,7 @@ public class CustomerServiceTest {
         Long customerId = 1L;
         when(customerRepository.getCustomerById(customerId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             customerService.getCustomerById(customerId);
         });
 
@@ -83,6 +86,7 @@ public class CustomerServiceTest {
         Customer updatedCustomer = customerService.usePoint(customerId, amount);
 
         assertNotNull(updatedCustomer);
+        assertEquals(50.0, updatedCustomer.getPoint());
         verify(customerRepository, times(1)).getCustomerById(customerId);
         verify(customerRepository, times(1)).saveCustomer(customer);
     }
@@ -94,7 +98,7 @@ public class CustomerServiceTest {
         Double amount = 50.0;
         when(customerRepository.getCustomerById(customerId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             customerService.usePoint(customerId, amount);
         });
 

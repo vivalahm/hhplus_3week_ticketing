@@ -6,6 +6,8 @@ import com.hhplus.concertticketing.business.service.TokenService;
 import com.hhplus.concertticketing.adaptor.presentation.dto.request.TokenRequest;
 import com.hhplus.concertticketing.adaptor.presentation.dto.response.TokenResponse;
 import com.hhplus.concertticketing.adaptor.presentation.dto.response.TokenStatusResponse;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +27,9 @@ public class TokenUseCase {
     }
 
     @Transactional
-    public void checkAndUpdateExpiredTokens(){
+    public void checkAndUpdateExpiredTokens() {
         List<Token> expiredTokens = tokenService.getActiveExpiredTokens(LocalDateTime.now());
-        for(Token token : expiredTokens){
+        for (Token token : expiredTokens) {
             token.setStatus(TokenStatus.EXPIRED);
             tokenService.updateToken(token);
             Optional<Token> nextWaitingTokenOptional = tokenService.getNextWaitingToken(token.getConcertId());
@@ -40,29 +42,24 @@ public class TokenUseCase {
         }
     }
 
-    public TokenResponse issueToken(TokenRequest tokenRequest, Integer maxActiveTokens){
-        Token token = tokenService.issueToken(tokenRequest.getCustomerId(),tokenRequest.getConcertId(),maxActiveTokens);
-        return new TokenResponse(token.getTokenValue(),token.getStatus(), token.getExpiresAt());
+    public TokenResponse issueToken(TokenRequest tokenRequest, Integer maxActiveTokens) {
+        Token token = tokenService.issueToken(tokenRequest.getCustomerId(), tokenRequest.getConcertId(), maxActiveTokens);
+        return new TokenResponse(token.getTokenValue(), token.getStatus(), token.getExpiresAt());
     }
 
-    public TokenStatusResponse getTokenStatus(String tokenValue){
-        try {
-            Token token = tokenService.getTokenByTokenValue(tokenValue);
-            TokenStatus status = token.getStatus();
-            if (!status.equals(TokenStatus.WAITING)) {
-                return new TokenStatusResponse(status, 0L);
-            }
-
-            Long currentPositon = 1L;
-            Optional<Token> firstCandidateToken = tokenService.getNextWaitingToken(token.getConcertId());
-            if (firstCandidateToken.isPresent()) {
-                currentPositon = token.getId() - firstCandidateToken.get().getId();
-            }
-
-            return new TokenStatusResponse(status, currentPositon);
-        } catch (Exception e) {
-            logger.error("Error in getTokenStatus: " + e.getMessage(), e);
-            throw e;
+    public TokenStatusResponse getTokenStatus(String tokenValue) {
+        Token token = tokenService.getTokenByTokenValue(tokenValue);
+        TokenStatus status = token.getStatus();
+        if (!status.equals(TokenStatus.WAITING)) {
+            return new TokenStatusResponse(status, 0L);
         }
+
+        Long currentPositon = 1L;
+        Optional<Token> firstCandidateToken = tokenService.getNextWaitingToken(token.getConcertId());
+        if (firstCandidateToken.isPresent()) {
+            currentPositon = token.getId() - firstCandidateToken.get().getId();
+        }
+
+        return new TokenStatusResponse(status, currentPositon);
     }
 }

@@ -4,29 +4,20 @@ import com.hhplus.concertticketing.adaptor.presentation.dto.response.TokenStatus
 import com.hhplus.concertticketing.application.usecase.TokenUseCase;
 import com.hhplus.concertticketing.business.model.TokenStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@WebMvcTest
-@AutoConfigureMockMvc
 public class TokenInterceptorTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private TokenUseCase tokenUseCase;
 
     @InjectMocks
@@ -35,32 +26,74 @@ public class TokenInterceptorTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(new Object())
-                .addInterceptors(tokenInterceptor)
-                .build();
     }
 
     @Test
-    void preHandle_ShouldReturn200_WhenTokenIsValid() throws Exception {
-        when(tokenUseCase.getTokenStatus(anyString())).thenReturn(new TokenStatusResponse(TokenStatus.ACTIVE, 1L));
+    @DisplayName("유효한 토큰인 경우 200 상태 코드 반환")
+    void preHandle_ShouldReturnTrue_WhenTokenIsValid() throws Exception {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setRequestURI("/api/some-endpoint");
+        request.addHeader("Authorization", "validToken");
 
-        mockMvc.perform(get("/api/some-endpoint")
-                        .header("Authorization", "validToken"))
-                .andExpect(status().isOk());
+        when(tokenUseCase.getTokenStatus("validToken")).thenReturn(new TokenStatusResponse(TokenStatus.ACTIVE, 1L));
+
+        // when
+        boolean result = tokenInterceptor.preHandle(request, response, new Object());
+
+        // then
+        assertTrue(result);
+        assertEquals(200, response.getStatus());
     }
 
     @Test
-    void preHandle_ShouldReturn401_WhenTokenIsInvalid() throws Exception {
-        when(tokenUseCase.getTokenStatus(anyString())).thenReturn(new TokenStatusResponse(TokenStatus.EXPIRED, 1L));
+    @DisplayName("유효하지 않은 토큰인 경우 401 상태 코드 반환")
+    void preHandle_ShouldReturnFalse_WhenTokenIsInvalid() throws Exception {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setRequestURI("/api/some-endpoint");
+        request.addHeader("Authorization", "invalidToken");
 
-        mockMvc.perform(get("/api/some-endpoint")
-                        .header("Authorization", "invalidToken"))
-                .andExpect(status().isUnauthorized());
+        when(tokenUseCase.getTokenStatus("invalidToken")).thenReturn(new TokenStatusResponse(TokenStatus.EXPIRED, 1L));
+
+        // when
+        boolean result = tokenInterceptor.preHandle(request, response, new Object());
+
+        // then
+        assertFalse(result);
+        assertEquals(401, response.getStatus());
     }
 
     @Test
-    void preHandle_ShouldReturn401_WhenTokenIsMissing() throws Exception {
-        mockMvc.perform(get("/api/some-endpoint"))
-                .andExpect(status().isUnauthorized());
+    @DisplayName("토큰이 없는 경우 401 상태 코드 반환")
+    void preHandle_ShouldReturnFalse_WhenTokenIsMissing() throws Exception {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setRequestURI("/api/some-endpoint");
+
+        // when
+        boolean result = tokenInterceptor.preHandle(request, response, new Object());
+
+        // then
+        assertFalse(result);
+        assertEquals(401, response.getStatus());
+    }
+
+    @Test
+    @DisplayName("예외 경로인 경우 true 반환")
+    void preHandle_ShouldReturnTrue_ForExcludedPaths() throws Exception {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setRequestURI("/api/point/charge");
+
+        // when
+        boolean result = tokenInterceptor.preHandle(request, response, new Object());
+
+        // then
+        assertTrue(result);
     }
 }

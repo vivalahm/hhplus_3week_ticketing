@@ -2,6 +2,7 @@ package com.hhplus.concertticketing.business.service;
 
 import com.hhplus.concertticketing.business.model.Customer;
 import com.hhplus.concertticketing.business.repository.CustomerRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
 import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,9 +28,11 @@ public class CustomerServiceIntegrationTest {
     @BeforeEach
     void setUp() {
         customer = new Customer();
-        customer.setId(1L);
         customer.setName("홍길동");
-        customerRepository.saveCustomer(customer);
+        // Ensure saveCustomer returns the saved entity with its generated ID
+        customer = customerRepository.saveCustomer(customer);
+        // Optionally, assert that the customer ID is not null
+        assertNotNull(customer.getId(), "Customer ID must not be null after saving");
     }
 
     @Test
@@ -37,6 +40,7 @@ public class CustomerServiceIntegrationTest {
     void chargePoint_ShouldReturnUpdatedCustomer() {
         Double amount = 100.0;
 
+        // This call should now work as expected, with customer having a non-null ID
         Customer updatedCustomer = customerService.chargePoint(customer.getId(), amount);
 
         assertNotNull(updatedCustomer);
@@ -57,7 +61,7 @@ public class CustomerServiceIntegrationTest {
     void getCustomerById_ShouldThrowException_WhenNotFound() {
         Long nonExistentCustomerId = 999L;
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             customerService.getCustomerById(nonExistentCustomerId);
         });
 
@@ -83,7 +87,7 @@ public class CustomerServiceIntegrationTest {
         Long nonExistentCustomerId = 999L;
         Double amount = 50.0;
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             customerService.usePoint(nonExistentCustomerId, amount);
         });
 
@@ -97,15 +101,13 @@ public class CustomerServiceIntegrationTest {
         Customer customer2 = customerService.getCustomerById(customer.getId());
 
         Thread thread1 = new Thread(() -> {
-            customer1.chargePoint(100.0);
             customerService.chargePoint(customer1.getId(), 100.0);
         });
 
         Thread thread2 = new Thread(() -> {
-            customer2.chargePoint(50.0);
             try {
                 customerService.chargePoint(customer2.getId(), 50.0);
-            } catch (OptimisticLockException e) {
+            } catch (CustomException e) {
                 System.out.println("Expected OptimisticLockException: " + e.getMessage());
             }
         });

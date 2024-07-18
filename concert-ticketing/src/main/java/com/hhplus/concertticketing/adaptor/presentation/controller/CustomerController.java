@@ -2,6 +2,7 @@ package com.hhplus.concertticketing.adaptor.presentation.controller;
 
 import com.hhplus.concertticketing.application.usecase.CustomerUseCase;
 import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import com.hhplus.concertticketing.adaptor.presentation.dto.request.ChargePointRequest;
 import com.hhplus.concertticketing.adaptor.presentation.dto.response.CustomerPointResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,56 +14,44 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-@Tag(name = "Customer Controller", description = "API for managing customers")
+@Tag(name = "고객 컨트롤러", description = "고객 관리를 위한 API")
 public class CustomerController {
     @Autowired
     private CustomerUseCase customerUseCase;
 
     @PatchMapping("/point/charge")
-    @Operation(summary = "Charge customer balance", description = "Charges the customer's balance with the specified amount")
+    @Operation(summary = "고객 잔액 충전", description = "지정된 금액으로 고객의 잔액을 충전합니다")
     public ResponseEntity<CustomerPointResponse> chargeBalance(
-            @RequestBody @Parameter(description = "ChargePointRequest object containing customerId and amount") ChargePointRequest request) {
+            @RequestBody @Parameter(description = "고객 ID와 금액을 포함하는 ChargePointRequest 객체") ChargePointRequest request) {
         if (request.getCustomerId() == null || request.getAmount() == null) {
-            CustomerPointResponse response = new CustomerPointResponse();
-            response.setResult("400");
-            response.setMessage("Missing or invalid parameters");
-            throw new CustomException("400", "Missing or invalid parameters");
+            throw new CustomException(ErrorCode.BAD_REQUEST);
         }
         try {
             CustomerPointResponse response = new CustomerPointResponse();
             response.setResult("200");
-            response.setMessage("Success");
+            response.setMessage("성공");
             response.setPoint(customerUseCase.chargePoint(request).getPoint());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            CustomerPointResponse response = new CustomerPointResponse();
-            response.setResult("500");
-            response.setMessage("Internal server error");
-            throw new CustomException("500", "Internal server error");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "내부 서버 오류");
         }
     }
 
     @GetMapping("/point")
-    @Operation(summary = "Get customer balance", description = "Returns the balance of the specified customer")
+    @Operation(summary = "고객 잔액 조회", description = "지정된 고객의 잔액을 반환합니다")
     public ResponseEntity<CustomerPointResponse> getBalance(
-            @RequestParam @Parameter(description = "ID of the customer") Long customerId) {
+            @RequestParam @Parameter(description = "고객의 ID") Long customerId) {
         if (customerId == null) {
-            CustomerPointResponse response = new CustomerPointResponse();
-            response.setResult("400");
-            response.setMessage("Missing or invalid userId");
-            throw new CustomException("400", "Missing or invalid userId");
+            throw new CustomException(ErrorCode.BAD_REQUEST, "잘못된 사용자 ID");
         }
         try {
             CustomerPointResponse response = new CustomerPointResponse();
             response.setResult("200");
-            response.setMessage("Success");
+            response.setMessage("성공");
             response.setPoint(customerUseCase.getPoint(customerId).getPoint());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            CustomerPointResponse response = new CustomerPointResponse();
-            response.setResult("500");
-            response.setMessage("Internal server error");
-            throw new CustomException("500", "Internal server error");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "내부 서버 오류");
         }
     }
 }

@@ -6,6 +6,8 @@ import com.hhplus.concertticketing.business.model.SeatStatus;
 import com.hhplus.concertticketing.business.repository.ConcertOptionRepository;
 import com.hhplus.concertticketing.business.repository.ConcertRepository;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class ConcertService {
     public ConcertOption getConcertOptionById(Long concertOptionId) {
         Optional<ConcertOption> optionalConcertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
         if(optionalConcertOption.isEmpty()){
-            throw new IllegalStateException("해당 콘서트 옵션을 발견못했습니다.");
+            throw new CustomException(ErrorCode.NOT_FOUND, "해당 콘서트 옵션을 발견하지 못했습니다.");
         }
         return optionalConcertOption.get();
     }
@@ -41,7 +43,7 @@ public class ConcertService {
     public List<ConcertOption> getAvailableConcertOptions(Long concertOptionId, LocalDateTime currentDateTime){
         List<ConcertOption> concertOptionList = concertOptionRepository.getAllAvailableDatesByConcertId(concertOptionId, currentDateTime);
         if(concertOptionList.isEmpty()){
-            throw new IllegalStateException("예약가능한 콘서트 옵션이 없습니다.");
+            throw new CustomException(ErrorCode.NOT_FOUND, "예약 가능한 콘서트 옵션이 없습니다.");
         }
         return concertOptionList;
     }
@@ -60,42 +62,42 @@ public class ConcertService {
                 try {
                     return seatRepository.saveSeat(seat);
                 } catch (OptimisticLockException e) {
-                    throw new OptimisticLockException("동시에 좌석을 잠그는 중입니다. 잠시 후 다시 시도해주세요.");
+                    throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "동시에 좌석을 잠그는 중입니다. 잠시 후 다시 시도해주세요.");
                 }
             } else {
-                throw new IllegalArgumentException("Seat is not available");
+                throw new CustomException(ErrorCode.BAD_REQUEST, "좌석이 예약 가능하지 않습니다.");
             }
         } else {
-            throw new IllegalArgumentException("Seat does not exist");
+            throw new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다.");
         }
     }
 
     @Transactional
     public void unlockSeat(Long seatId) {
-        Seat seat = seatRepository.getSeatById(seatId).orElseThrow(() -> new IllegalArgumentException("Seat does not exist"));
+        Seat seat = seatRepository.getSeatById(seatId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
         seat.setStatus(SeatStatus.AVAILABLE);
         try {
             seatRepository.saveSeat(seat);
         } catch (OptimisticLockException e) {
-            throw new OptimisticLockException("동시에 좌석 잠금을 해제하는 중입니다. 잠시 후 다시 시도해주세요.");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "동시에 좌석 잠금을 해제하는 중입니다. 잠시 후 다시 시도해주세요.");
         }
     }
 
     @Transactional
     public void reserveSeat(Long seatId) {
-        Seat seat = seatRepository.getSeatById(seatId).orElseThrow(() -> new IllegalArgumentException("Seat does not exist"));
+        Seat seat = seatRepository.getSeatById(seatId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
         seat.setStatus(SeatStatus.RESERVED);
         try {
             seatRepository.saveSeat(seat);
         } catch (OptimisticLockException e) {
-            throw new OptimisticLockException("동시에 좌석을 예약하는 중입니다. 잠시 후 다시 시도해주세요.");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "동시에 좌석을 예약하는 중입니다. 잠시 후 다시 시도해주세요.");
         }
     }
 
     public List<Seat> getAvailableSeats(Long concertOptionId) {
         List<Seat> seatList = seatRepository.getAvailableSeats(concertOptionId);
         if (seatList.isEmpty()) {
-            throw new IllegalStateException("가능한 좌석이 없습니다.");
+            throw new CustomException(ErrorCode.NOT_FOUND, "가능한 좌석이 없습니다.");
         }
         return seatList;
     }
@@ -103,9 +105,8 @@ public class ConcertService {
     public Seat getAvailableSeat(Long concertOptionId, Long seatId) {
         Optional<Seat> seatOptional = seatRepository.getAvailableSeat(concertOptionId, seatId);
         if (seatOptional.isEmpty()) {
-            throw new IllegalStateException("좌석이 존재하지 않습니다.");
+            throw new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다.");
         }
         return seatOptional.get();
     }
-
 }

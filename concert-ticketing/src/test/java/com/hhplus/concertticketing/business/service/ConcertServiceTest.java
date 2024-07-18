@@ -5,6 +5,7 @@ import com.hhplus.concertticketing.business.model.SeatStatus;
 import com.hhplus.concertticketing.business.model.ConcertOption;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
 import com.hhplus.concertticketing.business.repository.ConcertOptionRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,6 @@ public class ConcertServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // SeatServiceTest methods
-
     @Test
     @DisplayName("좌석 잠금 시 잠금된 좌석 객체 반환 테스트")
     void lockSeat_ShouldReturnLockedSeat_WhenSeatIsAvailable() {
@@ -68,11 +67,11 @@ public class ConcertServiceTest {
 
         when(seatRepository.getAvailableSeat(concertOptionId, seatId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             concertService.lockSeat(concertOptionId, seatId);
         });
 
-        assertEquals("Seat does not exist", exception.getMessage());
+        assertEquals("좌석이 존재하지 않습니다.", exception.getMessage());
         verify(seatRepository, times(1)).getAvailableSeat(concertOptionId, seatId);
         verify(seatRepository, times(0)).saveSeat(any(Seat.class));
     }
@@ -100,11 +99,11 @@ public class ConcertServiceTest {
 
         when(seatRepository.getSeatById(seatId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             concertService.unlockSeat(seatId);
         });
 
-        assertEquals("Seat does not exist", exception.getMessage());
+        assertEquals("좌석이 존재하지 않습니다.", exception.getMessage());
         verify(seatRepository, times(1)).getSeatById(seatId);
         verify(seatRepository, times(0)).saveSeat(any(Seat.class));
     }
@@ -132,11 +131,11 @@ public class ConcertServiceTest {
 
         when(seatRepository.getSeatById(seatId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             concertService.reserveSeat(seatId);
         });
 
-        assertEquals("Seat does not exist", exception.getMessage());
+        assertEquals("좌석이 존재하지 않습니다.", exception.getMessage());
         verify(seatRepository, times(1)).getSeatById(seatId);
         verify(seatRepository, times(0)).saveSeat(any(Seat.class));
     }
@@ -165,7 +164,7 @@ public class ConcertServiceTest {
 
         when(seatRepository.getAvailableSeats(concertOptionId)).thenReturn(Arrays.asList());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             concertService.getAvailableSeats(concertOptionId);
         });
 
@@ -200,7 +199,7 @@ public class ConcertServiceTest {
 
         when(seatRepository.getAvailableSeat(concertOptionId, seatId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalStateException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             concertService.getAvailableSeat(concertOptionId, seatId);
         });
         verify(seatRepository, times(1)).getAvailableSeat(concertOptionId, seatId);
@@ -236,11 +235,11 @@ public class ConcertServiceTest {
     @DisplayName("ID로 콘서트 옵션을 조회할 때 옵션이 존재하지 않으면 예외 발생 확인")
     void getConcertOptionById_ShouldThrowException_WhenNotFound() {
         when(concertOptionRepository.getConcertOptionById(1L)).thenReturn(Optional.empty());
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             concertService.getConcertOptionById(1L);
         });
 
-        assertEquals("해당 콘서트 옵션을 발견못했습니다.", exception.getMessage());
+        assertEquals("해당 콘서트 옵션을 발견하지 못했습니다.", exception.getMessage());
         verify(concertOptionRepository, times(1)).getConcertOptionById(1L);
     }
 
@@ -268,11 +267,11 @@ public class ConcertServiceTest {
 
         when(concertOptionRepository.getAllAvailableDatesByConcertId(1L, now)).thenReturn(Arrays.asList());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             concertService.getAvailableConcertOptions(1L, now);
         });
 
-        assertEquals("예약가능한 콘서트 옵션이 없습니다.", exception.getMessage());
+        assertEquals("예약 가능한 콘서트 옵션이 없습니다.", exception.getMessage());
         verify(concertOptionRepository, times(1)).getAllAvailableDatesByConcertId(1L, now);
     }
 

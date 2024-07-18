@@ -2,6 +2,8 @@ package com.hhplus.concertticketing.business.service;
 
 import com.hhplus.concertticketing.business.model.ConcertOption;
 import com.hhplus.concertticketing.business.repository.ConcertOptionRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,11 +61,10 @@ public class ConcertOptionServiceTest {
     void getConcertOptionById_ShouldThrowException_WhenNotFound() {
         when(concertOptionRepository.getConcertOptionById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            concertOptionService.getConcertOptionById(1L);
-        });
+        CustomException customException = assertThrows(CustomException.class,
+                () -> concertOptionService.getConcertOptionById(1L));
 
-        assertEquals("해당 콘서트 옵션을 발견못했습니다.", exception.getMessage());
+        assertEquals(ErrorCode.NOT_FOUND.getCode(), customException.getErrorCode().getCode());
         verify(concertOptionRepository, times(1)).getConcertOptionById(1L);
     }
 
@@ -91,11 +92,11 @@ public class ConcertOptionServiceTest {
 
         when(concertOptionRepository.getAllAvailableDatesByConcertId(1L, now)).thenReturn(Arrays.asList());
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException customException = assertThrows(CustomException.class, () -> {
             concertOptionService.getAvailableConcertOptions(1L, now);
         });
 
-        assertEquals("예약가능한 콘서트 옵션이 없습니다.", exception.getMessage());
+        assertEquals(ErrorCode.NOT_FOUND.getCode(), customException.getErrorCode().getCode());
         verify(concertOptionRepository, times(1)).getAllAvailableDatesByConcertId(1L, now);
     }
 

@@ -606,3 +606,7 @@
 ### ERD
 
 ![image](https://github.com/vivalahm/hhplus_3week_ticketing/assets/48741014/ceab926d-ee7b-4db3-bbf0-8d660004e0b6)
+
+
+### 에러 로깅 처리
+![image](https://github.com/user-attachments/assets/ecd7905a-5747-4008-b570-8b71ba063ba3)

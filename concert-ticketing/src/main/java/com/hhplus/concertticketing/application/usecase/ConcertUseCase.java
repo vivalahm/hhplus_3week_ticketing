@@ -12,11 +12,9 @@ import java.util.List;
 @Component
 public class ConcertUseCase {
     private final ConcertService concertService;
-    private final TokenService tokenService;
 
-    public ConcertUseCase(ConcertService concertService, TokenService tokenService) {
+    public ConcertUseCase(ConcertService concertService) {
         this.concertService = concertService;
-        this.tokenService = tokenService;
     }
 
     public List<ConcertOption> getAvailableOptions(Long concertId){
