@@ -2,13 +2,12 @@ package com.hhplus.concertticketing.application.usecase;
 
 import com.hhplus.concertticketing.business.model.*;
 import com.hhplus.concertticketing.business.service.*;
-import com.hhplus.concertticketing.presentation.dto.request.PaymentRequest;
-import com.hhplus.concertticketing.presentation.dto.response.PaymentResponse;
+import com.hhplus.concertticketing.adaptor.presentation.dto.request.PaymentRequest;
+import com.hhplus.concertticketing.adaptor.presentation.dto.response.PaymentResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Component
 public class PaymentUseCase {

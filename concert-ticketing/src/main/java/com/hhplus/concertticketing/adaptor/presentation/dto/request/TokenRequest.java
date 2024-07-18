@@ -1,4 +1,4 @@
-package com.hhplus.concertticketing.presentation.dto.request;
+package com.hhplus.concertticketing.adaptor.presentation.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -6,8 +6,8 @@ import com.hhplus.concertticketing.business.model.Token;
 import com.hhplus.concertticketing.business.service.ConcertService;
 import com.hhplus.concertticketing.business.service.ReservationService;
 import com.hhplus.concertticketing.business.service.TokenService;
-import com.hhplus.concertticketing.presentation.dto.request.ReservationRequest;
-import com.hhplus.concertticketing.presentation.dto.response.ReservationResponse;
+import com.hhplus.concertticketing.adaptor.presentation.dto.request.ReservationRequest;
+import com.hhplus.concertticketing.adaptor.presentation.dto.response.ReservationResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 

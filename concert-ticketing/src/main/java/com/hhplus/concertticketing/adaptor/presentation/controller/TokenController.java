@@ -1,10 +1,10 @@
-package com.hhplus.concertticketing.presentation.controller;
+package com.hhplus.concertticketing.adaptor.presentation.controller;
 
 import com.hhplus.concertticketing.application.usecase.TokenUseCase;
 import com.hhplus.concertticketing.common.exception.CustomException;
-import com.hhplus.concertticketing.presentation.dto.request.TokenRequest;
-import com.hhplus.concertticketing.presentation.dto.response.TokenResponse;
-import com.hhplus.concertticketing.presentation.dto.response.TokenStatusResponse;
+import com.hhplus.concertticketing.adaptor.presentation.dto.request.TokenRequest;
+import com.hhplus.concertticketing.adaptor.presentation.dto.response.TokenResponse;
+import com.hhplus.concertticketing.adaptor.presentation.dto.response.TokenStatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

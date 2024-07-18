@@ -1,9 +1,9 @@
-package com.hhplus.concertticketing.presentation.controller;
+package com.hhplus.concertticketing.adaptor.presentation.controller;
 
 import com.hhplus.concertticketing.application.usecase.PaymentUseCase;
 import com.hhplus.concertticketing.common.exception.CustomException;
-import com.hhplus.concertticketing.presentation.dto.request.PaymentRequest;
-import com.hhplus.concertticketing.presentation.dto.response.PaymentResponse;
+import com.hhplus.concertticketing.adaptor.presentation.dto.request.PaymentRequest;
+import com.hhplus.concertticketing.adaptor.presentation.dto.response.PaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

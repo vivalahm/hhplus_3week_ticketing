@@ -2,8 +2,8 @@ package com.hhplus.concertticketing.application.usecase;
 
 import com.hhplus.concertticketing.business.model.Customer;
 import com.hhplus.concertticketing.business.service.CustomerService;
-import com.hhplus.concertticketing.presentation.dto.request.ChargePointRequest;
-import com.hhplus.concertticketing.presentation.dto.response.CustomerPointResponse;
+import com.hhplus.concertticketing.adaptor.presentation.dto.request.ChargePointRequest;
+import com.hhplus.concertticketing.adaptor.presentation.dto.response.CustomerPointResponse;
 import org.springframework.stereotype.Component;
 
 @Component

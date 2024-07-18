@@ -19,13 +19,11 @@ public class ConcertUseCase {
         this.tokenService = tokenService;
     }
 
-    public List<ConcertOption> getAvailableOptions(Long concertId, String tokenValue){
-        tokenService.getTokenByTokenValue(tokenValue);
+    public List<ConcertOption> getAvailableOptions(Long concertId){
         return concertService.getAvailableConcertOptions(concertId, LocalDateTime.now());
     }
 
-    public List<Seat> getAvailableSeats(Long concertOptionId, String tokenValue){
-        tokenService.getTokenByTokenValue(tokenValue);
+    public List<Seat> getAvailableSeats(Long concertOptionId){
         return concertService.getAvailableSeats(concertOptionId);
     }
 }

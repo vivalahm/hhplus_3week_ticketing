@@ -1,4 +1,4 @@
-package com.hhplus.concertticketing.presentation.scheduler;
+package com.hhplus.concertticketing.adaptor.presentation.scheduler;
 
 import com.hhplus.concertticketing.application.usecase.TokenUseCase;
 import org.springframework.scheduling.annotation.Scheduled;
