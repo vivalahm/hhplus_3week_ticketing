@@ -30,5 +30,14 @@ public class Reservation {
 
     @Version
     private Long version;
+
+    public void reserveTicket(Long customerId, Long concertOptionId, Long seatId){
+        this.customerId = customerId;
+        this.concertOptionId = concertOptionId;
+        this.seatId = seatId;
+        this.status = ReservationStatus.RESERVING;
+        this.createdAt = LocalDateTime.now();
+        this.expiresAt = LocalDateTime.now().plusMinutes(5);
+    }
 }
 

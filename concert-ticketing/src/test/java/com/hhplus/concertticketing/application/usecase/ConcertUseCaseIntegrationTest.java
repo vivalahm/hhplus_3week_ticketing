@@ -8,6 +8,7 @@ import com.hhplus.concertticketing.business.model.SeatStatus;
 import com.hhplus.concertticketing.business.repository.ConcertOptionRepository;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
 import com.hhplus.concertticketing.business.repository.TokenRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,35 +69,21 @@ public class ConcertUseCaseIntegrationTest {
     @DisplayName("유효한 토큰으로 사용 가능한 콘서트 옵션 가져오기")
     void getAvailableOptions_WithValidToken_ShouldReturnOptions() {
         Long concertId = 1L;
-        List<ConcertOption> concertOptions = concertUseCase.getAvailableOptions(concertId, "validToken");
+        List<ConcertOption> concertOptions = concertUseCase.getAvailableOptions(concertId);
 
         assertNotNull(concertOptions);
         assertFalse(concertOptions.isEmpty());
     }
 
-    @Test
-    @DisplayName("유효하지 않은 토큰으로 사용 가능한 콘서트 옵션 가져오기")
-    void getAvailableOptions_WithInvalidToken_ShouldThrowException() {
-        assertThrows(IllegalStateException.class, () -> {
-            concertUseCase.getAvailableOptions(1L, "invalidToken");
-        });
-    }
 
     @Test
     @DisplayName("유효한 토큰으로 사용 가능한 좌석 가져오기")
     void getAvailableSeats_WithValidToken_ShouldReturnSeats() {
         Long concertOptionId = concertOption.getId();
-        List<Seat> seats = concertUseCase.getAvailableSeats(concertOptionId, "validToken");
+        List<Seat> seats = concertUseCase.getAvailableSeats(concertOptionId);
 
         assertNotNull(seats);
         assertFalse(seats.isEmpty());
     }
 
-    @Test
-    @DisplayName("유효하지 않은 토큰으로 사용 가능한 좌석 가져오기")
-    void getAvailableSeats_WithInvalidToken_ShouldThrowException() {
-        assertThrows(IllegalStateException.class, () -> {
-            concertUseCase.getAvailableSeats(1L, "invalidToken");
-        });
-    }
 }

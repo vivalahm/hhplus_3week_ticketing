@@ -9,5 +9,6 @@ public interface ConcertRepository {
     Concert saveConcert(Concert concert);
     Optional<Concert> getConcertById(Long id);
     List<Concert> getAllConcerts();
+    List<Concert> getAvailableConcerts();
     void deleteConcertById(Long id);
 }

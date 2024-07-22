@@ -10,5 +10,7 @@ public interface ConcertOptionRepository {
     ConcertOption saveConcertOption(ConcertOption concertOption);
     Optional<ConcertOption> getConcertOptionById(Long id);
     List<ConcertOption> getAllAvailableDatesByConcertId(Long concertId, LocalDateTime currentDateTime);
+    List<ConcertOption> getAllByConcertId(Long concertId);
+    List<ConcertOption> getByConcertIdAndIsAvailable(Long concertId, Boolean isAvailable);
     void deleteConcertOption(Long id);
 }

@@ -12,4 +12,8 @@ public interface ConcertOptionJpaRepository extends JpaRepository<ConcertOption,
 
     @Query("SELECT co FROM ConcertOption co WHERE co.concertId = :concertId AND co.concertDate > :currentDateTime AND co.isAvailable = TRUE" )
     List<ConcertOption> findAvailableDatesByConcertIdAndConcertDate(@Param("concertId")Long concertId,@Param("currentDateTime") LocalDateTime currentDateTime);
+
+    List<ConcertOption> findAllByConcertId(Long concertId);
+
+    List<ConcertOption> findByConcertIdAndIsAvailable(Long concertId, Boolean IsAvailable);
 }

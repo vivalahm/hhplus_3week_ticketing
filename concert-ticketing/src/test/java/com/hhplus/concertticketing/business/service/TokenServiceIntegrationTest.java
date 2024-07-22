@@ -3,6 +3,8 @@ package com.hhplus.concertticketing.business.service;
 import com.hhplus.concertticketing.business.model.Token;
 import com.hhplus.concertticketing.business.model.TokenStatus;
 import com.hhplus.concertticketing.business.repository.TokenRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,21 +72,21 @@ public class TokenServiceIntegrationTest {
     void getTokenByTokenValue_ShouldThrowException_WhenTokenDoesNotExist() {
         String nonExistentTokenValue = UUID.randomUUID().toString();
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             tokenService.getTokenByTokenValue(nonExistentTokenValue);
         });
 
-        assertEquals("Invalid token value", exception.getMessage());
+        assertEquals(ErrorCode.NOT_FOUND.getCode(), exception.getErrorCode().getCode());
     }
 
     @Test
     @DisplayName("콘서트 ID와 고객 ID로 조회 통합 테스트")
     void getTokenByConcertIdAndCustomerId_ShouldReturnToken() {
-        Token foundToken = tokenService.getTokenByConcertIdAndCustomerId(token.getConcertId(), token.getCustomerId());
+        Optional<Token> foundToken = tokenService.getTokenByConcertIdAndCustomerId(token.getConcertId(), token.getCustomerId());
 
         assertNotNull(foundToken);
-        assertEquals(token.getConcertId(), foundToken.getConcertId());
-        assertEquals(token.getCustomerId(), foundToken.getCustomerId());
+        assertEquals(token.getConcertId(), foundToken.get().getConcertId());
+        assertEquals(token.getCustomerId(), foundToken.get().getCustomerId());
     }
 
     @Test
@@ -93,11 +95,11 @@ public class TokenServiceIntegrationTest {
         Long nonExistentConcertId = 999L;
         Long nonExistentCustomerId = 999L;
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             tokenService.getTokenByConcertIdAndCustomerId(nonExistentConcertId, nonExistentCustomerId);
         });
 
-        assertEquals("Invalid token value", exception.getMessage());
+        assertEquals(ErrorCode.NOT_FOUND.getCode(), exception.getErrorCode().getCode());
     }
 
     @Test

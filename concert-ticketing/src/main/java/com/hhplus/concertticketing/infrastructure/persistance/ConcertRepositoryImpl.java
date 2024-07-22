@@ -32,6 +32,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
+    public List<Concert> getAvailableConcerts() {
+        return concertJpaRepository.findAllByIsFinishedFalseAndIsSoldOutFalse();
+    }
+
+    @Override
     public void deleteConcertById(Long id) {
         concertJpaRepository.deleteById(id);
     }

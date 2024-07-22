@@ -3,6 +3,8 @@ package com.hhplus.concertticketing.business.service;
 import com.hhplus.concertticketing.business.model.Reservation;
 import com.hhplus.concertticketing.business.model.ReservationStatus;
 import com.hhplus.concertticketing.business.repository.ReservationRepository;
+import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
