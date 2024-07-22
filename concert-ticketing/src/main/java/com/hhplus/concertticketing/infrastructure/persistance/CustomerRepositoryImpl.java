@@ -26,7 +26,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     @Override
     public List<Customer> getAllCustomers() {
-        return List.of();
+        return customerJpaRepository.findAll();
     }
 
     @Override

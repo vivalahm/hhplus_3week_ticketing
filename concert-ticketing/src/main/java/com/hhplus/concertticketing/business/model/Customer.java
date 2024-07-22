@@ -18,7 +18,7 @@ public class Customer {
     private Double point = 0.0;
 
     @Version
-    private Long version = 0L; // 버전 필드 초기화
+    private Long version;
 
     public void chargePoint(Double point) {
         if(point <= 0){
