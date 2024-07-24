@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface CustomerRepository {
     Optional<Customer> getCustomerById(Long customerId);
+    Optional<Customer> getCustomerByIdWithLock(Long customerId);
     Customer saveCustomer(Customer customer);
     List<Customer> getAllCustomers();
     void deleteCustomer(Long customerId);
