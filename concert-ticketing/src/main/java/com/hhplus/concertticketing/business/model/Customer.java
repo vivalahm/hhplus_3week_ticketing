@@ -17,9 +17,6 @@ public class Customer {
 
     private Double point = 0.0;
 
-    @Version
-    private Long version = 0L; // 버전 필드 초기화
-
     public void chargePoint(Double point) {
         if(point <= 0){
             throw new IllegalArgumentException("포인트 충전은 0보다 커야합니다.");

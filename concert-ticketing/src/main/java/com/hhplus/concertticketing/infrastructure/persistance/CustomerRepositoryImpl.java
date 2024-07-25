@@ -20,6 +20,11 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
+    public Customer getCustomerByIdWithPessimisticLock(Long customerId) {
+        return customerJpaRepository.findByIdForUpdate(customerId);
+    }
+
+    @Override
     public Customer saveCustomer(Customer customer){
         return customerJpaRepository.save(customer);
     }
