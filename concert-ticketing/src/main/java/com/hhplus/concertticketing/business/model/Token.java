@@ -28,5 +28,8 @@ public class Token {
 
     private LocalDateTime expiresAt;
 
+    @Version
+    private Long version;
+
 }
 

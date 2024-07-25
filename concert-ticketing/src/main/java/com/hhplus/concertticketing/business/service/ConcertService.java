@@ -9,8 +9,10 @@ import com.hhplus.concertticketing.business.repository.ConcertRepository;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
+
 import jakarta.persistence.OptimisticLockException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -116,6 +118,7 @@ public class ConcertService {
         return concertOptionRepository.saveConcertOption(concertOption);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public ConcertOption getConcertOptionById(Long concertOptionId) {
         Optional<ConcertOption> optionalConcertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
         if(optionalConcertOption.isEmpty()){
@@ -146,7 +149,7 @@ public class ConcertService {
         concertOptionRepository.deleteConcertOption(concertOptionId);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public Seat lockSeat(Long concertOptionId, Long seatId) {
         Optional<Seat> optionalSeat = seatRepository.getAvailableSeat(concertOptionId, seatId);
         if (optionalSeat.isPresent()) {
@@ -177,7 +180,7 @@ public class ConcertService {
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void reserveSeat(Long seatId) {
         Seat seat = seatRepository.getSeatById(seatId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
         seat.setStatus(SeatStatus.RESERVED);
