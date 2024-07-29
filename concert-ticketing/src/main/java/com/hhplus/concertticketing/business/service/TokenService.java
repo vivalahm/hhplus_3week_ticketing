@@ -6,6 +6,8 @@ import com.hhplus.concertticketing.business.repository.TokenRepository;
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,6 +46,7 @@ public class TokenService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "유효하지 않은 토큰 값입니다."));
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public Optional<Token> getTokenByConcertIdAndCustomerId(Long concertId, Long customerId) {
         Optional<Token> tokenOptional = tokenRepository.getTokenByConcertIdAndCustomerId(concertId, customerId);
         if (!tokenOptional.isPresent()) {
@@ -60,6 +63,7 @@ public class TokenService {
         return tokenRepository.getNextWaitingToken(concertId);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateToken(Token token) {
         tokenRepository.saveToken(token);
     }
