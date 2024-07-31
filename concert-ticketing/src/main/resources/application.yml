@@ -41,3 +41,12 @@ springdoc:
 logging:
   level:
     com.hhplus.concertticketing: INFO
+
+#Prometheus
+management:
+  endpoints:
+    metrics:
+      enabled: true
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
