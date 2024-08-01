@@ -2,7 +2,6 @@ package com.hhplus.concertticketing.business.service;
 
 import com.hhplus.concertticketing.business.model.Token;
 import com.hhplus.concertticketing.business.model.TokenStatus;
-import com.hhplus.concertticketing.business.repository.TokenRepository;
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,12 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,20 +28,25 @@ public class TokenServiceIntegrationTest {
     private TokenService tokenService;
 
     @Autowired
-    private TokenRepository tokenRepository;
+    private RedisTemplate<String, Object> redisTemplate;
 
     private Token token;
+    private SetOperations<String, Object> setOperations;
+    private ZSetOperations<String, Object> zSetOperations;
 
     @BeforeEach
     void setUp() {
+        setOperations = redisTemplate.opsForSet();
+        zSetOperations = redisTemplate.opsForZSet();
+
         token = new Token();
         token.setCustomerId(1L);
         token.setConcertId(1L);
         token.setTokenValue(UUID.randomUUID().toString());
         token.setStatus(TokenStatus.ACTIVE);
-        token.setCreatedAt(LocalDateTime.now());
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(10));
-        tokenRepository.saveToken(token);
+        // 토큰을 Redis에 저장
+        redisTemplate.opsForValue().set("token:" + token.getTokenValue(), token);
+        redisTemplate.expire("token:" + token.getTokenValue(), 10, TimeUnit.MINUTES);
     }
 
     @Test
@@ -84,7 +90,7 @@ public class TokenServiceIntegrationTest {
     void getTokenByConcertIdAndCustomerId_ShouldReturnToken() {
         Optional<Token> foundToken = tokenService.getTokenByConcertIdAndCustomerId(token.getConcertId(), token.getCustomerId());
 
-        assertNotNull(foundToken);
+        assertTrue(foundToken.isPresent());
         assertEquals(token.getConcertId(), foundToken.get().getConcertId());
         assertEquals(token.getCustomerId(), foundToken.get().getCustomerId());
     }
@@ -103,32 +109,23 @@ public class TokenServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("현재 시간 이전에 만료된 활성 토큰 목록 조회 통합 테스트")
-    void getActiveExpiredTokens_ShouldReturnExpiredTokens() {
-        LocalDateTime now = LocalDateTime.now().plusMinutes(11);
-        List<Token> expiredTokens = tokenService.getActiveExpiredTokens(now);
-
-        assertNotNull(expiredTokens);
-        assertEquals(1, expiredTokens.size());
-        assertEquals(token.getTokenValue(), expiredTokens.get(0).getTokenValue());
-    }
-
-    @Test
     @DisplayName("다음 WAITING 상태의 토큰 조회 통합 테스트")
     void getNextWaitingToken_ShouldReturnNextWaitingToken() {
+        // WAITING 상태의 토큰을 추가
         token.setStatus(TokenStatus.WAITING);
-        tokenRepository.saveToken(token);
+        zSetOperations.add("queue:waiting:" + token.getConcertId(), token.getTokenValue(), 0);
+        redisTemplate.opsForValue().set("token:" + token.getTokenValue(), token);
 
-        Optional<Token> nextWaitingToken = tokenService.getNextWaitingToken(token.getConcertId());
+        Optional<String> nextWaitingToken = tokenService.getNextWaitingToken(token.getConcertId());
 
         assertTrue(nextWaitingToken.isPresent());
-        assertEquals(token.getTokenValue(), nextWaitingToken.get().getTokenValue());
+        assertEquals(token.getTokenValue(), nextWaitingToken.get());
     }
 
     @Test
     @DisplayName("다음 WAITING 상태의 토큰이 존재하지 않을 때 빈 Optional 반환 통합 테스트")
     void getNextWaitingToken_ShouldReturnEmpty_WhenNotExists() {
-        Optional<Token> nextWaitingToken = tokenService.getNextWaitingToken(token.getConcertId());
+        Optional<String> nextWaitingToken = tokenService.getNextWaitingToken(token.getConcertId());
 
         assertFalse(nextWaitingToken.isPresent());
     }
@@ -137,11 +134,10 @@ public class TokenServiceIntegrationTest {
     @DisplayName("토큰 업데이트 통합 테스트")
     void updateToken_ShouldSaveToken() {
         token.setStatus(TokenStatus.EXPIRED);
-
         tokenService.updateToken(token);
 
-        Optional<Token> updatedToken = tokenRepository.getTokenByTokenValue(token.getTokenValue());
-        assertTrue(updatedToken.isPresent());
-        assertEquals(TokenStatus.EXPIRED, updatedToken.get().getStatus());
+        Token updatedToken = (Token) redisTemplate.opsForValue().get("token:" + token.getTokenValue());
+        assertNotNull(updatedToken);
+        assertEquals(TokenStatus.EXPIRED, updatedToken.getStatus());
     }
 }

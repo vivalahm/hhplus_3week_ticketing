@@ -76,12 +76,10 @@ public class TokenUseCaseIntegrationTest {
         token.setConcertId(concertOption.getConcertId());
         token.setCustomerId(customer.getId());
         token.setTokenValue("token-value");
-        token.setCreatedAt(LocalDateTime.now());
-        token.setExpiresAt(LocalDateTime.now().minusMinutes(1));
         token.setStatus(TokenStatus.ACTIVE);
         token = tokenRepository.saveToken(token);
 
-        tokenUseCase.checkAndUpdateExpiredTokens();
+        tokenUseCase.checkAndUpdateExpiredTokens(1L);
 
         Token updatedToken = tokenRepository.getTokenById(token.getId()).orElseThrow();
         assertEquals(TokenStatus.EXPIRED, updatedToken.getStatus());
@@ -94,8 +92,6 @@ public class TokenUseCaseIntegrationTest {
         token.setConcertId(concertOption.getConcertId());
         token.setCustomerId(customer.getId());
         token.setTokenValue("token-value");
-        token.setCreatedAt(LocalDateTime.now());
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(10));
         token.setStatus(TokenStatus.ACTIVE);
         token = tokenRepository.saveToken(token);
 
