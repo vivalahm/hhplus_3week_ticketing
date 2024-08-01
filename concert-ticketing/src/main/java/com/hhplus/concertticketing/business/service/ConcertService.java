@@ -1,24 +1,23 @@
 package com.hhplus.concertticketing.business.service;
 
-import com.hhplus.concertticketing.business.model.Concert;
-import com.hhplus.concertticketing.business.model.ConcertOption;
-import com.hhplus.concertticketing.business.model.Seat;
-import com.hhplus.concertticketing.business.model.SeatStatus;
+import com.hhplus.concertticketing.adaptor.presentation.dto.request.ConcertRequest;
+import com.hhplus.concertticketing.business.model.*;
 import com.hhplus.concertticketing.business.repository.ConcertOptionRepository;
 import com.hhplus.concertticketing.business.repository.ConcertRepository;
 import com.hhplus.concertticketing.business.repository.SeatRepository;
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
-
 import jakarta.persistence.OptimisticLockException;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 @Slf4j
 @Service
 public class ConcertService {
@@ -33,83 +32,76 @@ public class ConcertService {
     }
 
     public List<Concert> getAvailableConcerts(){
-         return concertRepository.getAvailableConcerts();
+        return concertRepository.getAvailableConcerts();
+    }
+
+    public Concert saveConcert(ConcertRequest concertRequest) {
+        Concert concert = new Concert(concertRequest.getConcertName());
+        return concertRepository.saveConcert(concert);
     }
 
     public Concert getConcertInfo(Long concertId) {
-        Optional<Concert> concert = concertRepository.getConcertById(concertId);
-        if(concert.isEmpty()){
-            throw new CustomException(ErrorCode.NOT_FOUND, "콘서트가 존재하지 않습니다.");
-        }
-        return concert.get();
+        return concertRepository.getConcertById(concertId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트가 존재하지 않습니다."));
     }
 
     @Transactional
     public void markAsSoldOutIfSeatsNotAvailable(Long concertId) {
-        List<ConcertOption> availableConcertOptions = concertOptionRepository.getByConcertIdAndIsAvailable(concertId, true);
-        boolean allSoldOut = availableConcertOptions.isEmpty();
+        boolean allSoldOut = concertOptionRepository.getByConcertIdAndIsAvailable(concertId, true).isEmpty();
 
         if (allSoldOut) {
-            Concert concert = concertRepository.getConcertById(concertId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트를 찾을 수 없습니다."));
+            Concert concert = concertRepository.getConcertById(concertId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트를 찾을 수 없습니다."));
             concert.soldOut();
             concertRepository.saveConcert(concert);
         }
     }
 
-    //취소시 필요한 처리
     @Transactional
     public void checkAndReopenConcertSales(Long concertId) {
         boolean anyAvailable = !(concertOptionRepository.getByConcertIdAndIsAvailable(concertId, true).isEmpty());
 
         if (anyAvailable) {
-            Concert concert = concertRepository.getConcertById(concertId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트를 찾을 수 없습니다."));
+            Concert concert = concertRepository.getConcertById(concertId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트를 찾을 수 없습니다."));
             concert.reopenSales();
             concertRepository.saveConcert(concert);
         }
     }
 
-    //별도 배치 필요할듯 (하루에 한번?)
     @Transactional
     public void markConcertAsFinished(Long concertId) {
         List<ConcertOption> concertOptions = concertOptionRepository.getAllByConcertId(concertId);
-        //1.concertOptionRepository를 통해 주어진 concertId에 해당하는 모든 콘서트 옵션을 조회.
-        //2.조회된 콘서트 옵션들 중 getConcertDate 메서드를 사용하여 각 옵션의 날짜를 가져온다.
-        //3.stream을 사용하여 모든 날짜를 비교하고, max 함수를 통해 가장 늦은 날짜를 찾는다.
-        //4.찾아낸 가장 늦은 날짜가 현재 날짜보다 이전인 경우, 해당 콘서트가 종료되었다고 판단
+
         LocalDateTime latestOptionDate = concertOptions.stream()
                 .map(ConcertOption::getConcertDate)
                 .max(LocalDateTime::compareTo)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트 옵션이 존재하지 않습니다."));
 
         if (latestOptionDate.isBefore(LocalDateTime.now())) {
-            Concert concert = concertRepository.getConcertById(concertId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트를 찾을 수 없습니다."));
+            Concert concert = concertRepository.getConcertById(concertId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "콘서트를 찾을 수 없습니다."));
             concert.finishConcert();
             concertRepository.saveConcert(concert);
         }
     }
 
-    //좌석없으면 콘서트 옵션 매진 처리
     public void markConcertOptionAsNotAvailableIfNoSeatsExist(Long concertOptionId) {
         Optional<ConcertOption> concertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
-        if(concertOption.isPresent()){
-            if(concertOption.get().getIsAvailable()) {
-                List<Seat> seats = seatRepository.getAvailableSeats(concertOptionId);
-                if (seats.isEmpty()) {
-                    concertOption.get().makeNotAvailable();
-                }
+        if (concertOption.isPresent() && concertOption.get().getIsAvailable()) {
+            List<Seat> seats = seatRepository.getAvailableSeats(concertOptionId);
+            if (seats.isEmpty()) {
+                concertOption.get().makeNotAvailable();
             }
         }
     }
 
-    //좌석있으면 콘서트 옵션 매진풀기
     public void markConcertOptionAsAvailableIfSeatsExist(Long concertOptionId) {
         Optional<ConcertOption> concertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
-        if(concertOption.isPresent()){
-            if(!concertOption.get().getIsAvailable()) {
-                List<Seat> seats = seatRepository.getAvailableSeats(concertOptionId);
-                if (!seats.isEmpty()) {
-                    concertOption.get().makeAvailable();
-                }
+        if (concertOption.isPresent() && !concertOption.get().getIsAvailable()) {
+            List<Seat> seats = seatRepository.getAvailableSeats(concertOptionId);
+            if (!seats.isEmpty()) {
+                concertOption.get().makeAvailable();
             }
         }
     }
@@ -120,14 +112,12 @@ public class ConcertService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public ConcertOption getConcertOptionById(Long concertOptionId) {
-        Optional<ConcertOption> optionalConcertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
-        if(optionalConcertOption.isEmpty()){
-            throw new CustomException(ErrorCode.NOT_FOUND, "해당 콘서트 옵션을 발견하지 못했습니다.");
-        }
-        return optionalConcertOption.get();
+        return concertOptionRepository.getConcertOptionById(concertOptionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "해당 콘서트 옵션을 발견하지 못했습니다."));
     }
 
-    public List<ConcertOption> getAvailableConcertOptions(Long concertId, LocalDateTime currentDateTime){
+    @Cacheable(value = "availableConcertOptions", key="#p0", condition="#p0!=null")
+    public List<ConcertOption> getAvailableConcertOptions(Long concertId){
         Optional<Concert> concert = concertRepository.getConcertById(concertId);
         if(concert.isPresent()){
             if(concert.get().getIsFinished()){
@@ -136,14 +126,16 @@ public class ConcertService {
             if(concert.get().getIsSoldOut()){
                 throw new CustomException(ErrorCode.BAD_REQUEST, "품절된 콘서트 입니다.");
             }
+            List<ConcertOption> concertOptionList = concertOptionRepository.getAllAvailableDatesByConcertId(concertId, LocalDateTime.now());
+            if(concertOptionList.isEmpty()){
+                concert.get().soldOut();
+                throw new CustomException(ErrorCode.NOT_FOUND, "예약 가능한 콘서트 옵션이 없습니다.");
+            }
+            return concertOptionList;
         }
-        List<ConcertOption> concertOptionList = concertOptionRepository.getAllAvailableDatesByConcertId(concertId, currentDateTime);
-        if(concertOptionList.isEmpty()){
-            concert.get().soldOut();
-            throw new CustomException(ErrorCode.NOT_FOUND, "예약 가능한 콘서트 옵션이 없습니다.");
-        }
-        return concertOptionList;
+        throw new CustomException(ErrorCode.NOT_FOUND, "콘서트가 존재하지 않습니다.");
     }
+
 
     public void deleteConcertOptionById(Long concertOptionId) {
         concertOptionRepository.deleteConcertOption(concertOptionId);
@@ -151,27 +143,25 @@ public class ConcertService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Seat lockSeat(Long concertOptionId, Long seatId) {
-        Optional<Seat> optionalSeat = seatRepository.getAvailableSeat(concertOptionId, seatId);
-        if (optionalSeat.isPresent()) {
-            Seat seat = optionalSeat.get();
-            if (seat.getStatus() == SeatStatus.AVAILABLE) {
-                seat.setStatus(SeatStatus.LOCKED);
-                try {
-                    return seatRepository.saveSeat(seat);
-                } catch (OptimisticLockException e) {
-                    throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "동시에 좌석을 잠그는 중입니다. 잠시 후 다시 시도해주세요.");
-                }
-            } else {
-                throw new CustomException(ErrorCode.BAD_REQUEST, "좌석이 예약 가능하지 않습니다.");
+        Seat seat = seatRepository.getAvailableSeat(concertOptionId, seatId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
+
+        if (seat.getStatus() == SeatStatus.AVAILABLE) {
+            seat.setStatus(SeatStatus.LOCKED);
+            try {
+                return seatRepository.saveSeat(seat);
+            } catch (OptimisticLockException e) {
+                throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "동시에 좌석을 잠그는 중입니다. 잠시 후 다시 시도해주세요.");
             }
         } else {
-            throw new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다.");
+            throw new CustomException(ErrorCode.BAD_REQUEST, "좌석이 예약 가능하지 않습니다.");
         }
     }
 
     @Transactional
     public void unlockSeat(Long seatId) {
-        Seat seat = seatRepository.getSeatById(seatId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
+        Seat seat = seatRepository.getSeatById(seatId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
         seat.setStatus(SeatStatus.AVAILABLE);
         try {
             seatRepository.saveSeat(seat);
@@ -182,7 +172,8 @@ public class ConcertService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void reserveSeat(Long seatId) {
-        Seat seat = seatRepository.getSeatById(seatId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
+        Seat seat = seatRepository.getSeatById(seatId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
         seat.setStatus(SeatStatus.RESERVED);
         try {
             seatRepository.saveSeat(seat);
@@ -192,23 +183,19 @@ public class ConcertService {
     }
 
     public List<Seat> getAvailableSeats(Long concertOptionId) {
-        Optional<ConcertOption> concertOption = concertOptionRepository.getConcertOptionById(concertOptionId);
-        if (concertOption.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND, "예약 가능한 콘서트 옵션이 없습니다.");
-        }
+        ConcertOption concertOption = concertOptionRepository.getConcertOptionById(concertOptionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "예약 가능한 콘서트 옵션이 없습니다."));
+
         List<Seat> seatList = seatRepository.getAvailableSeats(concertOptionId);
         if (seatList.isEmpty()) {
-            concertOption.get().makeNotAvailable();
+            concertOption.makeNotAvailable();
             throw new CustomException(ErrorCode.NOT_FOUND, "가능한 좌석이 없습니다.");
         }
         return seatList;
     }
 
     public Seat getAvailableSeat(Long concertOptionId, Long seatId) {
-        Optional<Seat> seatOptional = seatRepository.getAvailableSeat(concertOptionId, seatId);
-        if (seatOptional.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다.");
-        }
-        return seatOptional.get();
+        return seatRepository.getAvailableSeat(concertOptionId, seatId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "좌석이 존재하지 않습니다."));
     }
 }

@@ -22,5 +22,14 @@ services:
     ports:
       - "6379:6379"
 
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: concert_ticketing
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
 volumes:
   grafana-storage:

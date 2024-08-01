@@ -26,6 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/point/**", "/api/token/issue", "/api-docs", "/swagger-ui/**");
+                .excludePathPatterns("/api/point/**", "/api/token/issue", "/api-docs", "/swagger-ui/**, /api/*/saveConcert, /api/*/available-dates, /api/*/available-dates");
     }
 }

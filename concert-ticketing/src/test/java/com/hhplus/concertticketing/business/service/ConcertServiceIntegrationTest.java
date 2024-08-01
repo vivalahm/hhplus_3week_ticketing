@@ -150,7 +150,7 @@ public class ConcertServiceIntegrationTest {
         concertOptionRepository.saveConcertOption(concertOption1);
         concertOptionRepository.saveConcertOption(concertOption2);
 
-        List<ConcertOption> foundConcertOptions = concertService.getAvailableConcertOptions(concert.getId(), now);
+        List<ConcertOption> foundConcertOptions = concertService.getAvailableConcertOptions(concert.getId());
 
         assertNotNull(foundConcertOptions);
         assertFalse(foundConcertOptions.isEmpty());
