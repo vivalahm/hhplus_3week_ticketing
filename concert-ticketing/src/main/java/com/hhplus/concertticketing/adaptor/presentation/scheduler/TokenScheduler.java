@@ -22,7 +22,7 @@ public class TokenScheduler {
     public void checkExpiredTokens() {
         List<Concert> concerts = concertService.getAvailableConcerts(); // 활성 콘서트 ID 목록 가져오기
         for (Concert concert : concerts) {
-            tokenUseCase.checkAndUpdateExpiredTokens(concert.getId());
+            tokenUseCase.checkAndUpdateExpiredTokens(concert.getId(), 30);
         }
     }
 }

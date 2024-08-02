@@ -79,7 +79,7 @@ public class TokenUseCaseIntegrationTest {
         token.setStatus(TokenStatus.ACTIVE);
         token = tokenRepository.saveToken(token);
 
-        tokenUseCase.checkAndUpdateExpiredTokens(1L);
+        tokenUseCase.checkAndUpdateExpiredTokens(1L, 30);
 
         Token updatedToken = tokenRepository.getTokenById(token.getId()).orElseThrow();
         assertEquals(TokenStatus.EXPIRED, updatedToken.getStatus());
