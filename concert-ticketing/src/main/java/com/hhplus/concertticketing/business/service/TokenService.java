@@ -75,6 +75,10 @@ public class TokenService {
         redisTemplate.opsForSet().remove(ACTIVE_TOKEN_KEY + ":" + concertId, tokenValue);
     }
 
+    public void removeToken(String tokenValue) {
+        redisTemplate.delete("token:" + tokenValue);
+    }
+
     public Token getTokenByTokenValue(String tokenValue) {
         return (Token) redisTemplate.opsForValue().get("token:" + tokenValue);
     }
@@ -91,17 +95,6 @@ public class TokenService {
                 }
             }
         }
-
-        Set<Object> waitingTokens = redisTemplate.opsForZSet().range(WAITING_TOKEN_KEY + ":" + concertId, 0, -1);
-        if (waitingTokens != null) {
-            for (Object tokenValue : waitingTokens) {
-                Token token = getTokenByTokenValue(tokenValue.toString());
-                if (token.getCustomerId().equals(customerId)) {
-                    return Optional.of(token);
-                }
-            }
-        }
-
         throw new CustomException(ErrorCode.NOT_FOUND, "유효하지 않은 토큰 값입니다.");
     }
 
