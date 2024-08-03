@@ -46,7 +46,6 @@ public class ConcertUseCaseIntegrationTest {
         token = new Token();
         token.setTokenValue("validToken");
         token.setStatus(TokenStatus.ACTIVE);
-        token.setExpiresAt(LocalDateTime.now().plusHours(1));
         tokenRepository.saveToken(token);
 
         // Initialize concert option

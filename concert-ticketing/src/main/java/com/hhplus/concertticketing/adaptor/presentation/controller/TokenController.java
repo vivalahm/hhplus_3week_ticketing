@@ -9,6 +9,7 @@ import com.hhplus.concertticketing.adaptor.presentation.dto.response.TokenStatus
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +36,9 @@ public class TokenController {
 
     @GetMapping("/status")
     @Operation(summary = "토큰 상태 확인", description = "주어진 토큰의 상태를 반환합니다.")
-    public ResponseEntity<TokenStatusResponse> getTokenStatus(
-            @RequestParam @Parameter(description = "토큰의 값") String tokenValue) {
+    public ResponseEntity<TokenStatusResponse> getTokenStatus(HttpServletRequest request) {
+        // 요청 헤더에서 Authorization 값을 가져옴
+        String tokenValue = request.getHeader("Authorization");
         try {
             return ResponseEntity.ok(tokenUseCase.getTokenStatus(tokenValue));
         } catch (IllegalArgumentException e) {

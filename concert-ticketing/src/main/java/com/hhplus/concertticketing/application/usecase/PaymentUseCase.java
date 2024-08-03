@@ -44,11 +44,12 @@ public class PaymentUseCase {
         // 좌석 예약을 완료한다.
         concertService.reserveSeat(reservation.getSeatId());
 
-        // 토큰을 만료 처리한다.
+        // 내 토큰을 찾아온다.
         Token token = tokenService.getTokenByConcertIdAndCustomerId(concertOption.getConcertId(), reservation.getCustomerId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "토큰이 존재하지 않습니다."));
-        token.setStatus(TokenStatus.EXPIRED);
-        tokenService.updateToken(token);
+        // 토큰을 만료 처리한다.
+        tokenService.removeToken(token.getTokenValue());
+
 
         return new PaymentResponse("SUCCESS", LocalDateTime.now());
     }

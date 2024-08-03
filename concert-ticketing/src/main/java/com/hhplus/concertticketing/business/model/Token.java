@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Setter
 @Getter
 @Table(name = "token")
-public class Token {
+public class Token implements Serializable {
+
+    private static final long serialVersionUID = 2L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,13 +26,5 @@ public class Token {
 
     @Enumerated(EnumType.STRING)
     private TokenStatus status; // ACTIVE, WAITING, EXPIRED
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime expiresAt;
-
-    @Version
-    private Long version;
-
 }
 
