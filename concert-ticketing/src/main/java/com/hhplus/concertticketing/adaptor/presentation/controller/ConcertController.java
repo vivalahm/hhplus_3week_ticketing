@@ -1,6 +1,8 @@
 package com.hhplus.concertticketing.adaptor.presentation.controller;
 
+import com.hhplus.concertticketing.adaptor.presentation.dto.request.ConcertRequest;
 import com.hhplus.concertticketing.adaptor.presentation.dto.response.ConcertOptionResponse;
+import com.hhplus.concertticketing.adaptor.presentation.dto.response.ConcertResponse;
 import com.hhplus.concertticketing.adaptor.presentation.dto.response.SeatResponse;
 import com.hhplus.concertticketing.application.usecase.ConcertUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +22,7 @@ public class ConcertController {
     @GetMapping("/{concertId}/available-dates")
     @Operation(summary = "가능한 콘서트 일정 가져오기", description = "콘서트 ID를 입력하면 해당 콘서트에 예약 가능한 콘서트 날짜를 보여줍니다.")
     public ResponseEntity<ConcertOptionResponse> getAvailableDates(
-            @PathVariable @Parameter(description = "콘서트의 ID") Long concertId) {
+            @PathVariable("concertId") @Parameter(description = "콘서트의 ID") Long concertId) {
         ConcertOptionResponse response = new ConcertOptionResponse();
         response.setResult("200");
         response.setMessage("성공");
@@ -36,6 +38,17 @@ public class ConcertController {
         response.setResult("200");
         response.setMessage("성공");
         response.setSeats(concertUseCase.getAvailableSeats(concertOptionId));
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{concertId}/saveConcert")
+    @Operation(summary = "콘서트 저장하기", description = "콘서트를 저장합니다.")
+    public ResponseEntity<ConcertResponse> saveConcert(
+            @RequestBody ConcertRequest concertRequest) {
+        ConcertResponse response = new ConcertResponse();
+        response.setResult("200");
+        response.setMessage("성공");
+        response.setConcert(concertUseCase.saveConcert(concertRequest));
         return ResponseEntity.ok(response);
     }
 }

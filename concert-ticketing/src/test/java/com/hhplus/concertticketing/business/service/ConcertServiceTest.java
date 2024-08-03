@@ -286,7 +286,7 @@ public class ConcertServiceTest {
 
         when(concertOptionRepository.getAllAvailableDatesByConcertId(1L, now)).thenReturn(concertOptions);
 
-        List<ConcertOption> foundConcertOptions = concertService.getAvailableConcertOptions(1L, now);
+        List<ConcertOption> foundConcertOptions = concertService.getAvailableConcertOptions(1L);
 
         assertNotNull(foundConcertOptions);
         assertFalse(foundConcertOptions.isEmpty());
@@ -306,7 +306,7 @@ public class ConcertServiceTest {
         when(concertOptionRepository.getAllAvailableDatesByConcertId(1L, now)).thenReturn(Collections.emptyList());
 
         CustomException exception = assertThrows(CustomException.class, () -> {
-            concertService.getAvailableConcertOptions(1L, now);
+            concertService.getAvailableConcertOptions(1L);
         });
 
         assertEquals("예약 가능한 콘서트 옵션이 없습니다.", exception.getMessage());
