@@ -8,6 +8,7 @@ import com.hhplus.concertticketing.adaptor.presentation.dto.response.Reservation
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +27,11 @@ public class ReservationController {
     @PostMapping("/reserve")
     @Operation(summary = "좌석 예약", description = "주어진 콘서트 옵션에 대해 좌석을 예약합니다.")
     public ResponseEntity<ReservationResponse> reserveSeat(
-            @RequestBody @Parameter(description = "토큰 값, 콘서트 옵션 ID, 좌석 ID를 포함하는 ReservationRequest 객체") ReservationRequest request) {
+            @RequestBody @Parameter(description = "토큰 값, 콘서트 옵션 ID, 좌석 ID를 포함하는 ReservationRequest 객체") ReservationRequest request, HttpServletRequest httpServletRequest) {
 
         logger.info("예약 요청 수신: {}", request);
+
+        request.setTokenValue(httpServletRequest.getHeader("Authorization"));
 
         if (request.getConcertOptionId() == null || request.getSeatId() == null) {
             logger.error("필수 파라미터가 누락되었거나 잘못되었습니다.");

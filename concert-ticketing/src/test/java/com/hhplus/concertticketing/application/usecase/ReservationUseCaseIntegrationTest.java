@@ -70,8 +70,6 @@ public class ReservationUseCaseIntegrationTest {
         token.setConcertId(concertOption.getConcertId());
         token.setCustomerId(customer.getId());
         token.setTokenValue("token-value");
-        token.setCreatedAt(LocalDateTime.now());
-        token.setExpiresAt(LocalDateTime.now().plusHours(2));
         token.setStatus(TokenStatus.ACTIVE);
         token = tokenRepository.saveToken(token);
     }

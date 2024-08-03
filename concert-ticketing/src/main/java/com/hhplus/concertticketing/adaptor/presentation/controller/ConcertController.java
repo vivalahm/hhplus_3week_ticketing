@@ -33,7 +33,7 @@ public class ConcertController {
     @GetMapping("/{concertOptionId}/available-seats")
     @Operation(summary = "예약 가능한 좌석 정보 가져오기", description = "콘서트 옵션 ID를 입력하면 예약 가능한 좌석을 보여줍니다.")
     public ResponseEntity<SeatResponse> getAvailableSeats(
-            @PathVariable @Parameter(description = "콘서트 옵션의 ID") Long concertOptionId) {
+            @PathVariable("concertOptionId") @Parameter(description = "콘서트 옵션의 ID") Long concertOptionId) {
         SeatResponse response = new SeatResponse();
         response.setResult("200");
         response.setMessage("성공");

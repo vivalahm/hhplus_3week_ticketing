@@ -12,7 +12,6 @@ public interface TokenRepository {
     List<Token> getAllTokens();
     Long getCountActiveTokens(Long concertId);
     Boolean getExistWaitingTokens(Long concertId);
-    List<Token> getActiveExpiredTokens(LocalDateTime currentDateTime);
     Optional<Token> getNextWaitingToken(Long concertId);
     Optional<Token> getTokenByTokenValue(String tokenValue);
     Optional<Token> getTokenByConcertIdAndCustomerId(Long concertId, Long customerId);

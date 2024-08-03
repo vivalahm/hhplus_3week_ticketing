@@ -40,7 +40,7 @@ public class CustomerController {
     @GetMapping("/point")
     @Operation(summary = "고객 잔액 조회", description = "지정된 고객의 잔액을 반환합니다")
     public ResponseEntity<CustomerPointResponse> getBalance(
-            @RequestParam @Parameter(description = "고객의 ID") Long customerId) {
+            @RequestParam("customerId") @Parameter(description = "고객의 ID") Long customerId) {
         if (customerId == null) {
             throw new CustomException(ErrorCode.BAD_REQUEST, "잘못된 사용자 ID");
         }

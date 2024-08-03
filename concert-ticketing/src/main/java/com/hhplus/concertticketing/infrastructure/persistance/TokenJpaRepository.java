@@ -18,13 +18,9 @@ public interface TokenJpaRepository extends JpaRepository<Token, Long> {
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Token t WHERE t.status = 'WAITING' AND t.concertId = :concertId")
     Boolean existsWaitingToken(@Param("concertId") Long concertId);
 
-    @Query("SELECT t FROM Token t WHERE t.status = 'ACTIVE' AND t.expiresAt < :currentDateTime")
-    List<Token> findActiveExpiredTokens(@Param("currentDateTime") LocalDateTime currentDateTime);
 
-    Optional<Token> findFirstByConcertIdAndStatusOrderByCreatedAtAsc(Long concertId, TokenStatus status);
+    Optional<Token> findFirstByConcertIdAndStatus(Long concertId, TokenStatus status);
 
-    @Query("SELECT t FROM Token t WHERE t.concertId = :concertId AND t.status = 'WAITING' AND t.createdAt < :createdAt ORDER BY t.createdAt DESC")
-    Optional<Token> findLastWaitingTokenBefore(@Param("concertId") Long concertId, @Param("createdAt") LocalDateTime createdAt);
 
     Optional<Token> findByTokenValue(String tokenValue);
 

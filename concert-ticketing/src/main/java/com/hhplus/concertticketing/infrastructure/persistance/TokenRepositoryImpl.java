@@ -28,14 +28,10 @@ public class TokenRepositoryImpl implements TokenRepository {
         return tokenJpaRepository.existsWaitingToken(concertId);
     }
 
-    @Override
-    public List<Token> getActiveExpiredTokens(LocalDateTime currentDateTime){
-        return tokenJpaRepository.findActiveExpiredTokens(currentDateTime);
-    }
 
     @Override
     public Optional<Token> getNextWaitingToken(Long concertId) {
-        return tokenJpaRepository.findFirstByConcertIdAndStatusOrderByCreatedAtAsc(concertId, TokenStatus.WAITING);
+        return tokenJpaRepository.findFirstByConcertIdAndStatus(concertId, TokenStatus.WAITING);
     }
 
     @Override

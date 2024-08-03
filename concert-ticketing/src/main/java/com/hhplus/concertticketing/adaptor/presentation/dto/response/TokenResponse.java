@@ -11,11 +11,9 @@ import java.time.LocalDateTime;
 public class TokenResponse {
     private String tokenValue;
     private TokenStatus status;
-    private LocalDateTime expiresAt;
 
-    public TokenResponse(String tokenValue, TokenStatus status, LocalDateTime expiresAt) {
+    public TokenResponse(String tokenValue, TokenStatus status) {
         this.tokenValue = tokenValue;
         this.status = status;
-        this.expiresAt = expiresAt;
     }
 }
