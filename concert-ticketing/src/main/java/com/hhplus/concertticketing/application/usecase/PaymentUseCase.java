@@ -1,5 +1,6 @@
 package com.hhplus.concertticketing.application.usecase;
 
+import com.hhplus.concertticketing.application.usecase.event.PaidEvent;
 import com.hhplus.concertticketing.business.model.*;
 import com.hhplus.concertticketing.business.service.*;
 import com.hhplus.concertticketing.adaptor.presentation.dto.request.PaymentRequest;
@@ -7,6 +8,7 @@ import com.hhplus.concertticketing.adaptor.presentation.dto.response.PaymentResp
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -17,12 +19,14 @@ public class PaymentUseCase {
     private final ConcertService concertService;
     private final TokenService tokenService;
     private final CustomerService customerService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public PaymentUseCase(ReservationService reservationService, ConcertService concertService, TokenService tokenService, CustomerService customerService) {
+    public PaymentUseCase(ReservationService reservationService, ConcertService concertService, TokenService tokenService, CustomerService customerService, ApplicationEventPublisher eventPublisher) {
         this.reservationService = reservationService;
         this.concertService = concertService;
         this.tokenService = tokenService;
         this.customerService = customerService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -43,13 +47,8 @@ public class PaymentUseCase {
 
         // 좌석 예약을 완료한다.
         concertService.reserveSeat(reservation.getSeatId());
-
-        // 내 토큰을 찾아온다.
-        Token token = tokenService.getTokenByConcertIdAndCustomerId(concertOption.getConcertId(), reservation.getCustomerId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "토큰이 존재하지 않습니다."));
-        // 토큰을 만료 처리한다.
-        tokenService.removeToken(token.getTokenValue());
-
+        // 결제 성공 이벤트 발행
+        eventPublisher.publishEvent(new PaidEvent(this, reservation , concertOption));
 
         return new PaymentResponse("SUCCESS", LocalDateTime.now());
     }
