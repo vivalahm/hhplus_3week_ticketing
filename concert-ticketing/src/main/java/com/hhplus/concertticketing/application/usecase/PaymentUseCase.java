@@ -1,10 +1,10 @@
 package com.hhplus.concertticketing.application.usecase;
 
-import com.hhplus.concertticketing.application.usecase.event.PaidEvent;
-import com.hhplus.concertticketing.business.model.*;
-import com.hhplus.concertticketing.business.service.*;
-import com.hhplus.concertticketing.adaptor.presentation.dto.request.PaymentRequest;
-import com.hhplus.concertticketing.adaptor.presentation.dto.response.PaymentResponse;
+import com.hhplus.concertticketing.domain.event.PaidEvent;
+import com.hhplus.concertticketing.domain.model.*;
+import com.hhplus.concertticketing.domain.service.*;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.request.PaymentRequest;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.response.PaymentResponse;
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -17,14 +17,12 @@ import java.time.LocalDateTime;
 public class PaymentUseCase {
     private final ReservationService reservationService;
     private final ConcertService concertService;
-    private final TokenService tokenService;
     private final CustomerService customerService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public PaymentUseCase(ReservationService reservationService, ConcertService concertService, TokenService tokenService, CustomerService customerService, ApplicationEventPublisher eventPublisher) {
+    public PaymentUseCase(ReservationService reservationService, ConcertService concertService, CustomerService customerService, ApplicationEventPublisher eventPublisher) {
         this.reservationService = reservationService;
         this.concertService = concertService;
-        this.tokenService = tokenService;
         this.customerService = customerService;
         this.eventPublisher = eventPublisher;
     }
@@ -45,10 +43,8 @@ public class PaymentUseCase {
         reservation.setStatus(ReservationStatus.PAID);
         reservationService.updateReservationStatus(reservation);
 
-        // 좌석 예약을 완료한다.
-        concertService.reserveSeat(reservation.getSeatId());
-        // 결제 성공 이벤트 발행
-        eventPublisher.publishEvent(new PaidEvent(this, reservation , concertOption));
+        // 트랜잭션이 커밋된 후 Kafka로 메세지 전송
+        eventPublisher.publishEvent(new PaidEvent(this, reservation, concertOption));
 
         return new PaymentResponse("SUCCESS", LocalDateTime.now());
     }
