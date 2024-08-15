@@ -1,14 +1,13 @@
 package com.hhplus.concertticketing.application.usecase;
 
-import com.hhplus.concertticketing.business.model.ConcertOption;
-import com.hhplus.concertticketing.business.model.Seat;
-import com.hhplus.concertticketing.business.model.Token;
-import com.hhplus.concertticketing.business.model.TokenStatus;
-import com.hhplus.concertticketing.business.model.SeatStatus;
-import com.hhplus.concertticketing.business.repository.ConcertOptionRepository;
-import com.hhplus.concertticketing.business.repository.SeatRepository;
-import com.hhplus.concertticketing.business.repository.TokenRepository;
-import com.hhplus.concertticketing.common.exception.CustomException;
+import com.hhplus.concertticketing.domain.model.ConcertOption;
+import com.hhplus.concertticketing.domain.model.Seat;
+import com.hhplus.concertticketing.domain.model.Token;
+import com.hhplus.concertticketing.domain.model.TokenStatus;
+import com.hhplus.concertticketing.domain.model.SeatStatus;
+import com.hhplus.concertticketing.domain.repository.ConcertOptionRepository;
+import com.hhplus.concertticketing.domain.repository.SeatRepository;
+import com.hhplus.concertticketing.domain.repository.TokenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

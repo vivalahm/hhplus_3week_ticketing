@@ -1,14 +1,11 @@
 package com.hhplus.concertticketing.infrastructure.persistance;
 
-import com.hhplus.concertticketing.business.model.Token;
-import com.hhplus.concertticketing.business.model.TokenStatus;
+import com.hhplus.concertticketing.domain.model.Token;
+import com.hhplus.concertticketing.domain.model.TokenStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.awt.print.Pageable;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 public interface TokenJpaRepository extends JpaRepository<Token, Long> {

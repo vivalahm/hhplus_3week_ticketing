@@ -1,13 +1,13 @@
 package com.hhplus.concertticketing.application.usecase;
 
-import com.hhplus.concertticketing.business.model.Reservation;
-import com.hhplus.concertticketing.business.model.ReservationStatus;
-import com.hhplus.concertticketing.business.model.Token;
-import com.hhplus.concertticketing.business.service.ConcertService;
-import com.hhplus.concertticketing.business.service.ReservationService;
-import com.hhplus.concertticketing.business.service.TokenService;
-import com.hhplus.concertticketing.adaptor.presentation.dto.request.ReservationRequest;
-import com.hhplus.concertticketing.adaptor.presentation.dto.response.ReservationResponse;
+import com.hhplus.concertticketing.domain.model.Reservation;
+import com.hhplus.concertticketing.domain.model.ReservationStatus;
+import com.hhplus.concertticketing.domain.model.Token;
+import com.hhplus.concertticketing.domain.service.ConcertService;
+import com.hhplus.concertticketing.domain.service.ReservationService;
+import com.hhplus.concertticketing.domain.service.TokenService;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.request.ReservationRequest;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.response.ReservationResponse;
 import com.hhplus.concertticketing.common.exception.CustomException;
 import com.hhplus.concertticketing.common.exception.ErrorCode;
 import jakarta.transaction.Transactional;
