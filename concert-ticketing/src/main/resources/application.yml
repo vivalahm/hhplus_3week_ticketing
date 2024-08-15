@@ -11,6 +11,9 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
         use_new_id_generator_mappings: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.PostgreSQLDialect

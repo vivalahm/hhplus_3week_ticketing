@@ -13,6 +13,7 @@ public class PaidEvent extends ApplicationEvent {
         super(source);
         this.reservation = reservation;
         this.concertOption = concertOption;
+
     }
 
     public Reservation getReservation() {
@@ -22,4 +23,5 @@ public class PaidEvent extends ApplicationEvent {
     public ConcertOption getConcertOption() {
         return concertOption;
     }
+
 }
