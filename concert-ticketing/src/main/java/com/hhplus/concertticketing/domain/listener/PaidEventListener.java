@@ -1,5 +1,6 @@
 package com.hhplus.concertticketing.domain.listener;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hhplus.concertticketing.domain.event.PaidEvent;
 import com.hhplus.concertticketing.domain.kafka.KafkaPublisher;
 import com.hhplus.concertticketing.domain.model.Token;
@@ -16,12 +17,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class PaidEventListener {
     private final KafkaPublisher kafkaPublisher;
     private final TokenService tokenService;
-    private final ApplicationEventPublisher eventPublisher;
 
-    public PaidEventListener(KafkaPublisher kafkaPublisher, TokenService tokenService, ApplicationEventPublisher eventPublisher) {
+    public PaidEventListener(KafkaPublisher kafkaPublisher, TokenService tokenService) {
         this.kafkaPublisher = kafkaPublisher;
         this.tokenService = tokenService;
-        this.eventPublisher = eventPublisher;
     }
 
     @Async
