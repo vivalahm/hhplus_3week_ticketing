@@ -1,6 +1,7 @@
 package com.hhplus.concertticketing.application.usecase;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hhplus.concertticketing.domain.event.PaidEvent;
 import com.hhplus.concertticketing.domain.model.*;
 import com.hhplus.concertticketing.domain.service.*;
@@ -45,7 +46,7 @@ class PaymentUseCaseEventPublishTest {
     }
 
     @Test
-    void processPayment_success() {
+    void processPayment_success() throws JsonProcessingException {
         PaymentRequest paymentRequest = new PaymentRequest();
         paymentRequest.setReservationId(1L);
 

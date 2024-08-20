@@ -2,21 +2,18 @@ spring:
   application:
     name: concert-ticketing
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop  # 테스트 시 데이터베이스를 초기화하기 위해 사용
     properties:
       hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
         use_new_id_generator_mappings: true
         use_sql_comments: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         show_sql: true
   data:
@@ -25,15 +22,11 @@ spring:
       port: 6379
 
   cache:
-    type: redis
-    redis:
-      time-to-live: 600000 # Cache TTL in milliseconds
+    type: none  # 테스트에서 Redis 캐시 사용하지 않도록 설정
 
   kafka:
     bootstrap-servers:
       - localhost:9092
-      - localhost:9093
-      - localhost:9094
     consumer:
       group-id: concert-ticketing-group
       auto-offset-reset: earliest

@@ -1,7 +1,7 @@
-package com.hhplus.concertticketing.application.usecase.event;
+package com.hhplus.concertticketing.domain.event;
 
-import com.hhplus.concertticketing.business.model.ConcertOption;
-import com.hhplus.concertticketing.business.model.Reservation;
+import com.hhplus.concertticketing.domain.model.ConcertOption;
+import com.hhplus.concertticketing.domain.model.Reservation;
 import org.springframework.context.ApplicationEvent;
 
 public class PaidEvent extends ApplicationEvent {
@@ -13,6 +13,7 @@ public class PaidEvent extends ApplicationEvent {
         super(source);
         this.reservation = reservation;
         this.concertOption = concertOption;
+
     }
 
     public Reservation getReservation() {
@@ -22,4 +23,5 @@ public class PaidEvent extends ApplicationEvent {
     public ConcertOption getConcertOption() {
         return concertOption;
     }
+
 }
