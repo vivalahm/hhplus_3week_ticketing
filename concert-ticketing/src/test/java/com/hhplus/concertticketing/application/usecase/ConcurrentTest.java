@@ -1,13 +1,13 @@
 package com.hhplus.concertticketing.application.usecase;
 
-import com.hhplus.concertticketing.adaptor.presentation.dto.request.ChargePointRequest;
-import com.hhplus.concertticketing.adaptor.presentation.dto.request.PaymentRequest;
-import com.hhplus.concertticketing.adaptor.presentation.dto.request.ReservationRequest;
-import com.hhplus.concertticketing.adaptor.presentation.dto.response.PaymentResponse;
-import com.hhplus.concertticketing.adaptor.presentation.dto.response.ReservationResponse;
-import com.hhplus.concertticketing.business.model.*;
-import com.hhplus.concertticketing.business.repository.*;
-import com.hhplus.concertticketing.business.service.CustomerService;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.request.ChargePointRequest;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.request.PaymentRequest;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.request.ReservationRequest;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.response.PaymentResponse;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.response.ReservationResponse;
+import com.hhplus.concertticketing.domain.model.*;
+import com.hhplus.concertticketing.domain.repository.*;
+import com.hhplus.concertticketing.domain.service.CustomerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

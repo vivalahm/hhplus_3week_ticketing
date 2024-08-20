@@ -1,13 +1,12 @@
 package com.hhplus.concertticketing.application.usecase;
 
-import com.hhplus.concertticketing.adaptor.presentation.dto.request.ConcertRequest;
-import com.hhplus.concertticketing.business.model.Concert;
-import com.hhplus.concertticketing.business.model.ConcertOption;
-import com.hhplus.concertticketing.business.model.Seat;
-import com.hhplus.concertticketing.business.service.ConcertService;
+import com.hhplus.concertticketing.Interfaces.presentation.dto.request.ConcertRequest;
+import com.hhplus.concertticketing.domain.model.Concert;
+import com.hhplus.concertticketing.domain.model.ConcertOption;
+import com.hhplus.concertticketing.domain.model.Seat;
+import com.hhplus.concertticketing.domain.service.ConcertService;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component

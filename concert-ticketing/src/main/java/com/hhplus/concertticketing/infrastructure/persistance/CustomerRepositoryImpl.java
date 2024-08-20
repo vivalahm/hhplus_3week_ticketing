@@ -1,7 +1,7 @@
 package com.hhplus.concertticketing.infrastructure.persistance;
 
-import com.hhplus.concertticketing.business.model.Customer;
-import com.hhplus.concertticketing.business.repository.CustomerRepository;
+import com.hhplus.concertticketing.domain.model.Customer;
+import com.hhplus.concertticketing.domain.repository.CustomerRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

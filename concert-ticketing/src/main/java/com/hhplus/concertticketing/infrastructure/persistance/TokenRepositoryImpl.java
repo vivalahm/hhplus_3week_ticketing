@@ -1,13 +1,10 @@
 package com.hhplus.concertticketing.infrastructure.persistance;
 
-import com.hhplus.concertticketing.business.model.Token;
-import com.hhplus.concertticketing.business.model.TokenStatus;
-import com.hhplus.concertticketing.business.repository.TokenRepository;
-import org.springframework.data.domain.PageRequest;
+import com.hhplus.concertticketing.domain.model.Token;
+import com.hhplus.concertticketing.domain.model.TokenStatus;
+import com.hhplus.concertticketing.domain.repository.TokenRepository;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

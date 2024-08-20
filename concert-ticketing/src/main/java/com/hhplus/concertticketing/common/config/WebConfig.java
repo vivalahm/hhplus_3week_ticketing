@@ -1,6 +1,6 @@
 package com.hhplus.concertticketing.common.config;
 
-import com.hhplus.concertticketing.adaptor.TokenInterceptor;
+import com.hhplus.concertticketing.Interfaces.TokenInterceptor;
 import com.hhplus.concertticketing.common.filter.RequestResponseLoggingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

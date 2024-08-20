@@ -1,6 +1,6 @@
 package com.hhplus.concertticketing.infrastructure.persistance;
 
-import com.hhplus.concertticketing.business.model.Seat;
+import com.hhplus.concertticketing.domain.model.Seat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

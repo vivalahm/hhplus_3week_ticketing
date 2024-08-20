@@ -1,7 +1,7 @@
 package com.hhplus.concertticketing.infrastructure.persistance;
 
-import com.hhplus.concertticketing.business.model.Reservation;
-import com.hhplus.concertticketing.business.repository.ReservationRepository;
+import com.hhplus.concertticketing.domain.model.Reservation;
+import com.hhplus.concertticketing.domain.repository.ReservationRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
