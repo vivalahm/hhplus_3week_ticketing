@@ -29,6 +29,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (requestURI.equals("/api/point/charge") ||
                 requestURI.equals("/api/point") ||
                 requestURI.equals("/api/token/issue")||
+                requestURI.equals("/api/token/status")||
                 requestURI.matches("/api/.*/saveConcert")||
                 requestURI.matches("/api/.*/available-dates")) {
             logger.info("URI에 대한 토큰 없이 요청 허용: {}", requestURI);
