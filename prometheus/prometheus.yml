@@ -7,7 +7,7 @@ scrape_configs:
     static_configs:
       - targets: ['host.docker.internal:8080'] # 로컬 Spring Boot 애플리케이션의 메트릭 엔드포인트
 
-  - job_name: 'kafka'
+  - job_name: 'kafka-exporter'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['kafka-1:9092', 'kafka-2:9093', 'kafka-3:9094'] # Kafka 브로커의 메트릭 엔드포인트
+      - targets: ['kafka-exporter:9308'] # Kafka 브로커의 메트릭 엔드포인트
