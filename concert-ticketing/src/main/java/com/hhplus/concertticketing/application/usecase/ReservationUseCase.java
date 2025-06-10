@@ -3,6 +3,7 @@ package com.hhplus.concertticketing.application.usecase;
 import com.hhplus.concertticketing.domain.model.Reservation;
 import com.hhplus.concertticketing.domain.model.ReservationStatus;
 import com.hhplus.concertticketing.domain.model.Token;
+import com.hhplus.concertticketing.domain.model.TokenStatus;
 import com.hhplus.concertticketing.domain.service.ConcertService;
 import com.hhplus.concertticketing.domain.service.ReservationService;
 import com.hhplus.concertticketing.domain.service.TokenService;
@@ -47,6 +48,9 @@ public class ReservationUseCase {
     public ReservationResponse reserveTicket(ReservationRequest reservationRequest) {
         try {
             Token token = tokenService.getTokenByTokenValue(reservationRequest.getTokenValue());
+            if (token == null || !TokenStatus.ACTIVE.equals(token.getStatus())) {
+                throw new CustomException(ErrorCode.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+            }
             concertService.lockSeat(reservationRequest.getConcertOptionId(), reservationRequest.getSeatId());
             Reservation reservation = reservationService.reserveTicket(token.getCustomerId(), reservationRequest.getConcertOptionId(), reservationRequest.getSeatId());
             return new ReservationResponse(reservation.getId(), reservation.getStatus(), reservation.getExpiresAt());
