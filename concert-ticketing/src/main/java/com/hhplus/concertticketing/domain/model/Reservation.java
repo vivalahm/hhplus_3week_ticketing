@@ -22,7 +22,7 @@ public class Reservation {
     private Long concertOptionId;
 
     @Enumerated(EnumType.STRING)
-    private ReservationStatus status; // RESERVING, RESERVED, CANCLED
+    private ReservationStatus status; // RESERVING, PAID, CANCELED
 
     private LocalDateTime createdAt;
 
