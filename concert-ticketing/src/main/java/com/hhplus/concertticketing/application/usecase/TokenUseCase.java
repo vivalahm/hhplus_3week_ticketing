@@ -45,11 +45,20 @@ public class TokenUseCase {
             }
         }
 
-        // Move waiting tokens to active
-        moveWaitingTokensToActive(concertId, removedCount, maxActiveTokens);
+        int currentActiveCount = Optional.ofNullable(tokenService.getActiveTokens(concertId))
+                .map(Set::size)
+                .orElse(0);
+        int availableSlots = maxActiveTokens - currentActiveCount;
+        if (availableSlots < 0) {
+            availableSlots = 0;
+        }
+        availableSlots += removedCount;
+
+        // Move waiting tokens to active if slots are available
+        moveWaitingTokensToActive(concertId, availableSlots);
     }
 
-    private void moveWaitingTokensToActive(Long concertId, int count, int maxActiveTokens) {
+    private void moveWaitingTokensToActive(Long concertId, int count) {
         for (int i = 0; i < count; i++) {
             Optional<String> nextWaitingTokenValue = tokenService.getNextWaitingToken(concertId);
             nextWaitingTokenValue.ifPresent(tokenValue -> {
