@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -52,13 +53,14 @@ public class PaymentOutBoxEventProcessorIntegrationTest {
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-    @Autowired
+    @Mock
     private ObjectMapper objectMapper;
 
     private Consumer<String, String> consumer;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         paymentOutBoxEventProcessor = new PaymentOutBoxEventProcessor(paymentMessageOutboxWritter, kafkaTemplate, reservationRepository, objectMapper);
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafkaBroker);
