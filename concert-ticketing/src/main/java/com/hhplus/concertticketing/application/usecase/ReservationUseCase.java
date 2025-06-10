@@ -36,7 +36,7 @@ public class ReservationUseCase {
     public void checkAndUpdateExpiredReservations() {
         List<Reservation> expiredReservations = reservationService.getExpiredReservations(LocalDateTime.now());
         for (Reservation reservation : expiredReservations) {
-            reservation.setStatus(ReservationStatus.CANCLED);
+            reservation.setStatus(ReservationStatus.CANCELED);
             reservationService.updateReservationStatus(reservation);
             concertService.unlockSeat(reservation.getSeatId());
             concertService.markConcertOptionAsAvailableIfSeatsExist(reservation.getConcertOptionId());

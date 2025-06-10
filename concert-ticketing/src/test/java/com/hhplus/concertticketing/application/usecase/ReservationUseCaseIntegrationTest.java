@@ -110,7 +110,7 @@ public class ReservationUseCaseIntegrationTest {
         reservationUseCase.checkAndUpdateExpiredReservations();
 
         Reservation updatedReservation = reservationRepository.getReservationById(reservation.getId()).orElseThrow();
-        assertEquals(ReservationStatus.CANCLED, updatedReservation.getStatus());
+        assertEquals(ReservationStatus.CANCELED, updatedReservation.getStatus());
 
         Seat updatedSeat = seatRepository.getSeatById(seat.getId()).orElseThrow();
         assertEquals(SeatStatus.AVAILABLE, updatedSeat.getStatus());
